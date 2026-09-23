@@ -2,218 +2,151 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Home EV charging in Montenegro — BlokVolt coverage</title>
-<meta name="description" content="BlokVolt does not work in Montenegro yet. Tell us your city and building and we will let you know when charging is available there.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EV charging in Montenegro: home chargers, public networks, prices and subsidies | BlokVolt</title>
+<meta name="description" content="Montenegro: who sells and installs home chargers, public charging networks and prices, electricity at home, subsidies and the rules for apartment buildings — with sources, checked 23.09.2026.">
 <link rel="canonical" href="https://blokvolt.com/montenegro/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BlokVolt">
-<meta property="og:title" content="Home EV charging in Montenegro — BlokVolt coverage">
-<meta property="og:description" content="BlokVolt does not work in Montenegro yet. Tell us your city and building and we will let you know when charging is available there.">
-<meta property="og:url" content="https://blokvolt.com/montenegro/">
 <meta property="og:locale" content="en_US">
+<meta property="og:title" content="EV charging in Montenegro: home chargers, public networks, prices and subsidies | BlokVolt">
+<meta property="og:description" content="Montenegro: who sells and installs home chargers, public charging networks and prices, electricity at home, subsidies and the rules for apartment buildings — with sources, checked 23.09.2026.">
+<meta property="og:url" content="https://blokvolt.com/montenegro/">
 <meta property="og:image" content="https://blokvolt.com/assets/og/og-en.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="BlokVolt — home EV charging for apartment buildings">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://blokvolt.com/assets/og/og-en.png">
 <meta name="theme-color" content="#0B0F17">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;700;800&display=swap">
-
-<style>
-*,*::before,*::after{box-sizing:border-box}
-:root{
-  --night:#0B0F17; --night-2:#151C2B; --ink:#0D111A; --ink-2:#5C6270; --ink-3:#3F4552;
-  --volt:#D9F45B; --volt-ink:#151B05;
-  --bg:#F2F1EC; --card:#FFFFFF; --tint:#E9E8E0; --mint:#E1E7DF; --lav:#E5E8EF;
-  --line:#E1DFD8; --line-d:rgba(255,255,255,.14);
-  --w:1200px;
-}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:Onest,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
-img{max-width:100%;height:auto}
-a{color:inherit}
-.wrap{max-width:var(--w);margin:0 auto;padding:0 24px}
-h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.01em;font-weight:800}
-h1{font-size:clamp(38px,6vw,56px);line-height:1.1}
-h2{font-size:clamp(28px,4vw,44px);line-height:1.15}
-h3{font-size:19px;font-weight:700}
-p{margin:0}
-.lead{font-size:clamp(16px,1.6vw,18px);line-height:1.55;color:var(--ink-2)}
-.on-dark .lead{color:rgba(240,242,236,.78)}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--volt)}
-.eyebrow.dark{color:var(--ink-2)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--volt)}
-.eyebrow.dark .dot{background:var(--ink)}
-header{position:absolute;top:0;left:0;right:0;z-index:50}
-.hd{display:flex;align-items:center;gap:14px;padding:22px 0}
-.pill{background:rgba(15,20,31,.6);backdrop-filter:blur(14px) saturate(150%);
-  border-radius:999px;display:flex;align-items:center}
-.logo{padding:13px 26px;text-decoration:none;color:#fff;font-size:20px;letter-spacing:-.02em}
-.logo i{font-style:normal;font-weight:300}.logo b{font-weight:800}
-.nav{margin:0 auto;gap:4px;padding:6px}
-.nav a{padding:10px 16px;border-radius:999px;text-decoration:none;color:rgba(255,255,255,.82);
-  font-size:15px;font-weight:500;white-space:nowrap}
-.nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:14px 26px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;
-  border:1px solid transparent;white-space:nowrap;transition:.15s ease;cursor:pointer}
-.btn-v{background:var(--volt);color:var(--volt-ink)}
-.btn-v:hover{filter:brightness(1.06)}
-.btn-o{border-color:rgba(255,255,255,.28);color:#fff}
-.btn-o:hover{border-color:#fff}
-@media(max-width:900px){.nav{display:none}}
-@media(max-width:520px){.logo{padding:12px 18px;font-size:18px}.btn{padding:12px 18px;font-size:14px}}
-.hero{background:var(--night);color:#fff;padding:150px 0 96px;position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;left:-8%;top:-30%;width:60%;height:120%;
-  background:radial-gradient(50% 50% at 40% 50%,rgba(217,244,91,.10),transparent 70%);pointer-events:none}
-.hero .wrap{position:relative;z-index:1}
-.hero h1{margin:16px 0 0;max-width:15ch}
-.hero h1 span{color:var(--volt)}
-.hero .lead{margin-top:20px;max-width:52ch}
-.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
-section{padding:88px 0}
-.sec-h{max-width:60ch}
-.sec-h h2{margin-top:14px}
-.sec-h p{margin-top:14px}
-@media(max-width:700px){section{padding:60px 0}.hero{padding:126px 0 68px}}
-.cov{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
-@media(max-width:940px){.cov{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.cov{grid-template-columns:1fr}}
-.cc{display:block;padding:26px;border-radius:24px;background:var(--card);
-  text-decoration:none;color:var(--ink);border:1px solid var(--line);transition:.16s ease}
-.cc:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(13,17,26,.08)}
-.cc.live{background:var(--night);color:#fff;border-color:transparent}
-.cc .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.cc .name{font-size:21px;font-weight:800;letter-spacing:-.01em}
-.cc .cities{display:block;margin-top:10px;font-size:14.5px;color:var(--ink-2)}
-.cc.live .cities{color:rgba(240,242,236,.7)}
-.chip{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
-.chip.on{background:var(--volt);border-color:var(--volt);color:var(--volt-ink)}
-.cc .go{display:block;margin-top:18px;font-size:14.5px;font-weight:700}
-.cc.live .go{color:var(--volt)}
-.block{background:var(--night);color:#fff;border-radius:44px;padding:72px 56px;
-  max-width:var(--w);margin:0 auto}
-@media(max-width:700px){.block{border-radius:28px;padding:44px 26px}}
-.blockwrap{padding:0 24px}
-@media(max-width:700px){.blockwrap{padding:0 16px}}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:44px}
-@media(max-width:860px){.steps{grid-template-columns:1fr;gap:28px}}
-.step .n{font-size:56px;font-weight:800;color:var(--volt);line-height:1;letter-spacing:-.03em}
-.step h3{margin:14px 0 8px}
-.step p{color:rgba(240,242,236,.72);font-size:15.5px}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
-@media(max-width:940px){.tiles{grid-template-columns:1fr}}
-.tile{padding:28px;border-radius:24px}
-.tile p{margin-top:10px;color:var(--ink-3);font-size:15.5px}
-.t1{background:var(--mint)}.t2{background:var(--lav)}.t3{background:var(--night);color:#fff}
-.t3 p{color:rgba(240,242,236,.72)}
-.prose{max-width:66ch}.prose p+p{margin-top:16px}
-.crumb{font-size:14px;margin-bottom:16px;color:rgba(240,242,236,.6)}
-.crumb a{color:rgba(240,242,236,.6)}
-footer{padding:0 24px 24px}
-.fcard{background:var(--night);color:#fff;border-radius:44px;padding:56px 48px 30px;
-  max-width:var(--w);margin:0 auto;overflow:hidden}
-@media(max-width:700px){.fcard{border-radius:28px;padding:38px 24px 20px}footer{padding:0 12px 12px}}
-.fgrid{display:flex;gap:44px;flex-wrap:wrap;justify-content:space-between}
-.fcol h4{margin:0 0 12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(240,242,236,.5);font-weight:700}
-.fcol a{display:block;color:rgba(240,242,236,.82);text-decoration:none;font-size:15px;margin-bottom:9px}
-.fcol a:hover{color:#fff}
-.fbot{margin-top:36px;padding-top:20px;border-top:1px solid var(--line-d);
-  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
-  font-size:13px;color:rgba(240,242,236,.5)}
-.bigmark{margin-top:22px;font-size:clamp(56px,13vw,150px);font-weight:800;letter-spacing:-.045em;
-  line-height:.82;color:rgba(240,242,236,.10);user-select:none}
-.bigmark i{font-style:normal;font-weight:300}
-</style>
-</head>
+<link rel="preload" href="/assets/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/onest-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v=404ebc6135">
+<link rel="stylesheet" href="/assets/agg.css?v=e4ba774f37">
+<link rel="stylesheet" href="/assets/com.css?v=d5ffc582d8">
+<script type="application/ld+json">{
+ "@context": "https://schema.org",
+ "@graph": [
+  {"@type": "WebPage", "name": "EV charging in Montenegro: home chargers, public networks, prices and subsidies | BlokVolt", "description": "Montenegro: who sells and installs home chargers, public charging networks and prices, electricity at home, subsidies and the rules for apartment buildings \u2014 with sources, checked 23.09.2026.", "url": "https://blokvolt.com/montenegro/", "inLanguage": "en", "dateModified": "2026-09-23", "about": {"@type": "Country", "name": "Montenegro"}, "isPartOf": {"@type": "WebSite", "name": "BlokVolt", "url": "https://blokvolt.com/"}},
+  {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "BlokVolt", "item": "https://blokvolt.com/"}, {"@type": "ListItem", "position": 2, "name": "Montenegro", "item": "https://blokvolt.com/montenegro/"}]}
+ ]
+}</script></head>
 <body>
-<header>
-  <div class="wrap hd">
-    <a class="pill logo" href="/" aria-label="BlokVolt — home"><i>blok</i><b>volt</b></a>
-    <nav class="pill nav">
-      <a href="/#coverage">Where we work</a>
-      <a href="/#how">How it works</a>
-      <a href="/serbia/">Serbia</a>
-    </nav>
-    <a class="btn btn-v" href="https://www.blokvolt.rs" rel="noopener">blokvolt.rs &rarr;</a>
-  </div>
-</header>
-
-<main>
-<div class="hero on-dark">
-  <div class="wrap">
-    <div class="crumb"><a href="/">BlokVolt</a> &rarr; Montenegro</div>
-    <span class="eyebrow"><span class="dot"></span>Not yet</span>
-    <h1>Montenegro</h1>
-    <p class="lead" style="margin-top:14px">Podgorica · Budva · Bar · Nikšić</p>
-    <div class="cta">
-      <a class="btn btn-v" href="mailto:hello@blokvolt.com?subject=BlokVolt%20-%20Montenegro&amp;body=City%3A%20%0ABuilding%20or%20address%3A%20%0AParking%3A%20garage%20%2F%20box%20%2F%20marked%20space%0ACar%3A%20">Tell us it&rsquo;s needed</a>
-      <a class="btn btn-o" href="/#how">How it works</a></div>
-  </div>
+<div class="v2-page agg com"><nav data-menu-open="false" data-menu-wrap class="mega-nav" aria-label="Main navigation">
+<div class="mega-nav__bar"><div class="mega-nav__container"><div class="mega-nav__bar-start">
+<a data-menu-logo href="/" class="mega-nav__bar-logo" aria-label="BlokVolt — home" translate="no"><span>blok</span><span>volt</span></a>
+<div data-nav-list data-mobile-nav class="mega-nav__bar-inner">
+<ul class="mega-nav__bar-list">
+<li data-nav-list-item><button data-dropdown-toggle="countries" data-fallback-href="/serbia/" aria-expanded="false" aria-haspopup="true" class="mega-nav__bar-link is--dropdown is--active"><span class="mega-nav__bar-link-label">Countries</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 20 20" fill="none" class="mega-nav__bar-link-icon is--dropdown" aria-hidden="true"><path d="M6.6665 8.3335L9.99984 11.6668L13.3332 8.3335" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></li>
+<li data-nav-list-item><button data-dropdown-toggle="about" data-fallback-href="/partners/" aria-expanded="false" aria-haspopup="true" class="mega-nav__bar-link is--dropdown"><span class="mega-nav__bar-link-label">About</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 20 20" fill="none" class="mega-nav__bar-link-icon is--dropdown" aria-hidden="true"><path d="M6.6665 8.3335L9.99984 11.6668L13.3332 8.3335" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></li>
+</ul>
+<ul data-nav-list-item class="mega-nav__bar-list is--actions">
+<li class="mega-nav__bar-action"><a href="https://www.blokvolt.rs/en/" class="mega-nav__bar-cta"><span class="mega-nav__bar-link-label">Serbia guide</span><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 20 20" fill="none" class="mega-nav__bar-link-icon" aria-hidden="true"><path d="M8.3335 13.3335L11.6668 10.0002L8.3335 6.66683" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg></a></li>
+</ul>
 </div>
+<div class="mega-nav__bar-end"><button data-burger-toggle aria-label="Menu" aria-expanded="false" class="mega-nav__burger"><span data-burger-line="top" class="mega-nav__burger-line"></span><span data-burger-line="mid" class="mega-nav__burger-line"></span><span data-burger-line="bot" class="mega-nav__burger-line"></span></button></div>
+<div data-mobile-back class="mega-nav__back"><button aria-label="Back to menu" class="mega-nav__bar-link is--back"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 20 20" fill="none" class="mega-nav__bar-link-icon" aria-hidden="true"><path d="M11.6665 6.6665L8.33317 9.99984L11.6665 13.3332" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="mega-nav__bar-link-label">Back</span></button></div>
+</div></div></div>
+<div data-dropdown-wrapper class="mega-nav__dropdown-wrapper"><div data-dropdown-container class="mega-nav__dropdown-container"><div data-dropdown-bg class="mega-nav__dropdown-bg"></div>
+<div data-panel-state data-nav-content="countries" role="region" aria-label="Countries — menu" class="mega-nav__dropdown-panel"><div class="mega-nav__dropdown-inner">
+<div data-menu-fade class="mega-nav__panel-col"><span data-menu-fade class="mega-nav__panel-label">Western Balkans</span><ul class="mega-nav__panel-list">
+<li data-menu-fade><a href="/serbia/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Serbia</span><span class="mega-nav__panel-link-desc">Full guide on blokvolt.rs</span></a></li>
+<li data-menu-fade><a href="/montenegro/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Montenegro</span><span class="mega-nav__panel-link-desc">950 EVs registered, 94 public points</span></a></li>
+<li data-menu-fade><a href="/bosnia-and-herzegovina/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Bosnia and Herzegovina</span><span class="mega-nav__panel-link-desc">763 EVs, grant of up to 12,000 KM (FBiH)</span></a></li>
+<li data-menu-fade><a href="/north-macedonia/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">North Macedonia</span><span class="mega-nav__panel-link-desc">2,047 EVs, EVN charging 25–40 MKD/kWh</span></a></li>
+</ul></div>
+<div data-menu-fade class="mega-nav__panel-col"><span data-menu-fade class="mega-nav__panel-label">EU neighbours</span><ul class="mega-nav__panel-list">
+<li data-menu-fade><a href="/croatia/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Croatia</span><span class="mega-nav__panel-link-desc">7,058 EVs, about 1,000 charging locations</span></a></li>
+<li data-menu-fade><a href="/slovenia/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Slovenia</span><span class="mega-nav__panel-link-desc">4,600+ public points, grants up to €7,800</span></a></li>
+</ul></div>
+<div data-menu-fade class="mega-nav__panel-col is--colored"><span data-menu-fade class="mega-nav__panel-label">Serbia in detail</span><ul class="mega-nav__panel-list">
+<li data-menu-fade><a href="https://www.blokvolt.rs/en/firme/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Company register</span><span class="mega-nav__panel-link-desc">Installers and sellers, same columns for all</span></a></li>
+<li data-menu-fade><a href="https://www.blokvolt.rs/en/javno-punjenje/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Public charging in Serbia</span><span class="mega-nav__panel-link-desc">Networks, apps and prices</span></a></li>
+<li data-menu-fade><a href="https://www.blokvolt.rs/en/podaci/subvencije-2026/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Subsidies 2026</span><span class="mega-nav__panel-link-desc">€5,000 per new electric car</span></a></li>
+<li data-menu-fade><a href="https://www.blokvolt.rs/en/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">All of blokvolt.rs</span><span class="mega-nav__panel-link-desc">In English, Serbian and Russian</span></a></li>
+</ul></div>
+</div></div>
+<div data-panel-state data-nav-content="about" role="region" aria-label="About — menu" class="mega-nav__dropdown-panel"><div class="mega-nav__dropdown-inner">
+<div data-menu-fade class="mega-nav__panel-col"><span data-menu-fade class="mega-nav__panel-label">This site</span><ul class="mega-nav__panel-list">
+<li data-menu-fade><a href="/#how" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">How we check</span><span class="mega-nav__panel-link-desc">Public sources, dates, same rules for all</span></a></li>
+<li data-menu-fade><a href="https://www.blokvolt.rs/en/metodologija/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Methodology</span><span class="mega-nav__panel-link-desc">The full rules, on blokvolt.rs</span></a></li>
+<li data-menu-fade><a href="mailto:hello@blokvolt.com" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">Report a correction</span><span class="mega-nav__panel-link-desc">hello@blokvolt.com</span></a></li>
+</ul></div>
+<div data-menu-fade class="mega-nav__panel-col is--colored"><span data-menu-fade class="mega-nav__panel-label">Companies</span><ul class="mega-nav__panel-list">
+<li data-menu-fade><a href="/partners/" class="mega-nav__panel-link"><span class="mega-nav__panel-link-text">For companies and suppliers</span><span class="mega-nav__panel-link-desc">Listing is free and follows the same rules</span></a></li>
+</ul></div>
+</div></div>
+</div></div>
+<div data-menu-backdrop class="mega-nav__backdrop"></div>
+</nav><div class="v3-ph"><div class="w3"><div class="v3-kick">Country guide · Western Balkans · checked 23.09.2026</div><h1>EV charging in Montenegro</h1><p>Montenegro&#39;s EV market is small but growing: Monstat counted 950 electric-only and 5,874 hybrid vehicles among 322,241 registered motor vehicles in 2025 (715 and 3,221 a year earlier), and battery-electric cars made up 1.8% of new car registrations. Public charging is sparse and mostly slow: a draft national framework counts 94 publicly accessible charging points with none above 150 kW, there are no Tesla Superchargers, and none of the operators checked publishes per-kWh prices. Only a few firms advertise home chargers and none publishes prices, while household electricity averaged 9.98 euro cents per kWh including taxes in 2025.</p><div class="v3-meta"><span>Checked 23.09.2026</span><span>3 companies listed</span><span>21 sources</span></div><div class="v3-chips"><a href="#home-charging">Home chargers</a><a href="#public-charging">Public charging</a><a href="#electricity">Electricity at home</a><a href="#subsidies">Subsidies</a><a href="#buildings">Apartment buildings</a><a href="#sources">Sources</a></div></div></div><div class="bva"><div class="w3">
+<div class="bva-kv com-glance"><div><b>EV fleet</b><span>950 electric vehicles registered in 2025 (Monstat)</span></div><div><b>Public charging</b><span>94 public charging points, none above 150 kW</span></div><div><b>Subsidies</b><span>2026 purchase-grant rounds closed; no home-charger grant</span></div><div><b>Home chargers</b><span>3 home-charger companies found, none publishes prices</span></div></div>
+<p class="bva-disc">BlokVolt is run by the team of Evolako, a home-charger installer that works only in Serbia. Companies in Montenegro are listed by the same rules as everywhere on the site: only what their own websites say, with the date we checked, no ratings and no paid placements. Every figure below has its source; where a source is weak we say so.</p>
 
-<section>
-  <div class="wrap">
-    <div class="prose"><p>Not yet — BlokVolt does not work in Montenegro today, and we would rather say so than take a request for something we cannot install.</p><p>What helps is knowing where it is needed. Write to us with your city and building, and you will hear from us when charging is available there. Electricians who would want to run these installations locally are welcome to write too — that is usually what decides which market opens next.</p></div>
-    <div class="tiles">
-      <div class="tile t1"><h3>A safe line, or a wallbox</h3>
-        <p>A reinforced charging line, or an 11 kW wallbox — in the garage, box or marked space where the car already stands overnight.</p></div>
-      <div class="tile t2"><h3>A meter nobody argues with</h3>
-        <p>A certified sub-meter counts your kilowatt-hours, billed at the price on the electricity bill, with no markup on top.</p></div>
-      <div class="tile t3"><h3>The building paperwork</h3>
-        <p>The assembly package and the installation certificate are prepared in advance, so the meeting is a formality.</p></div>
-    </div>
-  </div>
-</section>
+<h2 id="numbers">Key numbers</h2>
+<div class="bva-tw"><table class="bva-tbl com-tbl"><thead><tr><th>Figure</th><th>Value</th><th>Source</th></tr></thead><tbody>
+<tr><td data-label="Figure">Electric-only vehicles registered, 2025<small>2024: 715. Monstat category &#39;El. energija&#39;; counts all vehicle categories registered with the Ministry of Interior during the year, not only passenger cars.</small></td><td data-label="Value"><b>950</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://www.monstat.org/uploads/files/Saobracaj/2025/Publikacija%20-%20Godi%C5%A1nja%20statistika%20saobra%C4%87aja%20za%202025.%20godinu.pdf" rel="noopener nofollow">Godišnja statistika saobraćaja, skladištenja i veza 2025 (Monstat)</a> · April 2026 · <span class="com-conf is-high">high reliability</span></small></td></tr>
+<tr><td data-label="Figure">Hybrid and other vehicles registered, 2025<small>2024: 3,221. Monstat category &#39;Hibridna vozila i ostala&#39; (not split into plug-in and full hybrids).</small></td><td data-label="Value"><b>5,874</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://www.monstat.org/uploads/files/Saobracaj/2025/Publikacija%20-%20Godi%C5%A1nja%20statistika%20saobra%C4%87aja%20za%202025.%20godinu.pdf" rel="noopener nofollow">Godišnja statistika saobraćaja, skladištenja i veza 2025 (Monstat)</a> · April 2026 · <span class="com-conf is-high">high reliability</span></small></td></tr>
+<tr><td data-label="Figure">All registered road motor vehicles, 2025<small>Of which passenger cars: 275,036. Excludes trailers (326,711 vehicles including trailers).</small></td><td data-label="Value"><b>322,241</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://www.monstat.org/uploads/files/Saobracaj/2025/Publikacija%20-%20Godi%C5%A1nja%20statistika%20saobra%C4%87aja%20za%202025.%20godinu.pdf" rel="noopener nofollow">Godišnja statistika saobraćaja, skladištenja i veza 2025 (Monstat)</a> · April 2026 · <span class="com-conf is-high">high reliability</span></small></td></tr>
+<tr><td data-label="Figure">Battery-electric passenger cars in use, end of 2025<small>Eurostat data as processed by Euronews.</small></td><td data-label="Value"><b>782 (0.28% of 275,036 passenger cars)</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://investitor.me/2026/08/17/crna-gora-pri-evropskom-dnu-elektricni-automobili-cinili-tek-18-novih-registracija/" rel="noopener nofollow">Crna Gora pri evropskom dnu: Električni automobili činili tek 1,8% novih registracija</a> · 17.08.2026 · <span class="com-conf is-medium">medium reliability</span></small></td></tr>
+<tr><td data-label="Figure">New battery-electric passenger cars registered, 2025<small>36th of 38 European countries compared; Eurostat data as processed by Euronews.</small></td><td data-label="Value"><b>129 of 7,285 new passenger cars (1.8%)</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://investitor.me/2026/08/17/crna-gora-pri-evropskom-dnu-elektricni-automobili-cinili-tek-18-novih-registracija/" rel="noopener nofollow">Crna Gora pri evropskom dnu: Električni automobili činili tek 1,8% novih registracija</a> · 17.08.2026 · <span class="com-conf is-medium">medium reliability</span></small></td></tr>
+<tr><td data-label="Figure">2030 target for electric passenger cars<small>Target of the National Energy and Climate Plan, cited in coverage of the draft alternative-fuels framework.</small></td><td data-label="Value"><b>At least 35,000</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://borba.me/eu-trazi-od-crne-gore-punionice-za-elektricna-vozila-na-svakih-60-kilometara/" rel="noopener nofollow">EU traži od Crne Gore: Punionice za električna vozila na svakih 60 kilometara</a> · 16.06.2026 · <span class="com-conf is-medium">medium reliability</span></small></td></tr>
+<tr><td data-label="Figure">Public chargers above 150 kW<small>Per the draft National Policy Framework for alternative fuels infrastructure, as reported.</small></td><td data-label="Value"><b>0</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://www.portalanalitika.me/clanak/crna-gora-bez-ultrabrzih-punjaca-za-elektricna-vozila-potrebno-najmanje-14-novih-lokacija" rel="noopener nofollow">Crna Gora bez ultrabrzih punjača za električna vozila, potrebno najmanje 14 novih lokacija</a> · 14.06.2026 · <span class="com-conf is-medium">medium reliability</span></small></td></tr>
+<tr><td data-label="Figure">Tesla Superchargers<small>tesla.com lists no Supercharger locations for Montenegro.</small></td><td data-label="Value"><b>0</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://www.tesla.com/findus/list/superchargers/Montenegro" rel="noopener nofollow">Tesla Superchargers in Montenegro</a> · no date on page; checked 23.09.2026 · <span class="com-conf is-high">high reliability</span></small></td></tr>
+</tbody></table></div>
 
-<section style="padding-top:0">
-  <div class="wrap">
-    <div class="sec-h"><h2>Other places</h2></div>
-    <div class="cov"><a class="cc live" href="/serbia/"><span class="top"><span class="name">Serbia</span><span class="chip on">We work here</span></span><span class="cities">Belgrade · Novi Sad · Vojvodina</span><span class="go">Open the Serbian site &rarr;</span></a><a class="cc" href="/bosnia-and-herzegovina/"><span class="top"><span class="name">Bosnia and Herzegovina</span><span class="chip">Not yet</span></span><span class="cities">Sarajevo · Banja Luka · Mostar · Tuzla</span><span class="go">Tell us it&rsquo;s needed &rarr;</span></a><a class="cc" href="/north-macedonia/"><span class="top"><span class="name">North Macedonia</span><span class="chip">Not yet</span></span><span class="cities">Skopje · Bitola · Kumanovo</span><span class="go">Tell us it&rsquo;s needed &rarr;</span></a><a class="cc" href="/croatia/"><span class="top"><span class="name">Croatia</span><span class="chip">Not yet</span></span><span class="cities">Zagreb · Split · Rijeka · Osijek</span><span class="go">Tell us it&rsquo;s needed &rarr;</span></a></div>
-  </div>
-</section>
-</main>
-<footer>
-  <div class="fcard">
-    <div class="fgrid">
-      <div class="fcol" style="max-width:32ch">
-        <h4>BlokVolt</h4>
-        <p style="color:rgba(240,242,236,.78);font-size:15px">Home charging for people who live in
-        apartment buildings — installed where the car already spends the night.</p>
-      </div>
-      <div class="fcol">
-        <h4>Where we work</h4>
-        <a href="/serbia/">Serbia</a>
-        <a href="/montenegro/">Montenegro</a>
-        <a href="/bosnia-and-herzegovina/">Bosnia and Herzegovina</a>
-        <a href="/north-macedonia/">North Macedonia</a>
-        <a href="/croatia/">Croatia</a>
-      </div>
-      <div class="fcol">
-        <h4>Contact</h4>
-        <a href="mailto:hello@blokvolt.com">hello@blokvolt.com</a>
-        <a href="https://www.blokvolt.rs" rel="noopener">blokvolt.rs — Serbian site</a>
-        <a href="/partners/">For suppliers</a>
-      </div>
-    </div>
-    <div class="fbot">
-      <span>© 2026 BlokVolt · Novi Sad · Belgrade</span>
-      <span>Serbia today. The rest of the region next.</span>
-    </div>
-    <div class="bigmark"><i>blok</i><b>volt</b></div>
-  </div>
-</footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Home EV charging in Montenegro — BlokVolt coverage", "url": "https://blokvolt.com/montenegro/", "inLanguage": "en", "about": {"@type": "Service", "name": "Home EV charging for apartment buildings", "provider": {"@type": "Organization", "name": "BlokVolt", "url": "https://blokvolt.com"}, "areaServed": {"@type": "Country", "name": "Montenegro"}}}</script>
+<h2 id="home-charging">Home chargers: who sells and installs them <span class="agg-count">3</span></h2>
+<p>Companies that sell wallboxes or install home chargers in Montenegro, as their own websites describe them. Prices are copied as published, with the currency and VAT as stated on the page.</p>
+<p class="bva-legend"><b>Yes</b> — installation is offered on the company's site · <b>On request</b> — offered, without a price or terms · <b>Not mentioned</b> — nothing about installation on the site</p>
+<div class="bva-tw"><table class="bva-tbl com-tbl agg-hub"><thead><tr><th>Company</th><th>What they offer</th><th>Published price</th><th>Installation</th></tr></thead><tbody>
+<tr><td data-label="Company"><b><a href="https://www.evcmontenegro.me/" rel="noopener nofollow">EVC Montenegro d.o.o.</a></b><small>Podgorica</small><small class="of">Brands: Schneider Electric (EVlink), Kempower</small><small class="chk">checked no date on page (© 2025); checked 23.09.2026</small></td><td data-label="What they offer">Sells home, public and DC fast chargers plus accessories, and states that it lays the supply cable, installs the charger and marks the parking bay. Describes itself as the official and sole authorised representative of Schneider Electric chargers in Montenegro; its home range is EVlink Wallbox, 3.7–22 kW (company article of 29.11.2021). Its project list includes two home-charger installations (Podgorica, Tuzi).</td><td data-label="Published price">Not published</td><td data-label="Installation"><b class="v">Yes</b><small>Installation takes 1–3 days, depending on whether the supply cable already reaches the charging spot (company site).</small></td></tr>
+<tr><td data-label="Company"><b><a href="https://www.goldmelectric.me/punjaci" rel="noopener nofollow">Gold-m Electric Cars</a></b><small>Podgorica</small><small class="of">Brand: Cenntro</small><small class="chk">checked no date on page (© 2025); checked 23.09.2026</small></td><td data-label="What they offer">Electric-vehicle dealer and service centre. Its chargers page lists a Cenntro AC charger (7–11 kW) for home, office or hotel use and a Cenntro DC charger (90–180 kW), with prices on request.</td><td data-label="Published price">Not published (quote on request)</td><td data-label="Installation"><b class="v">On request</b><small>The page offers support &#39;from selection to installation and maintenance&#39; and a quote request; no installation price is shown.</small></td></tr>
+<tr><td data-label="Company"><b><a href="https://solar-shop.me/product-category/punjaci-za-elektricna-vozila/" rel="noopener nofollow">NEMO-MONT (Solar-Shop.me)</a></b><small>Bar</small><small class="chk">checked no date on page (© 2021); checked 23.09.2026</small></td><td data-label="What they offer">Solar-equipment company (founded 2007) whose web shop has an &#39;EV chargers&#39; category (Punjači za električna vozila); no charger products or prices were displayed when checked.</td><td data-label="Published price">Not published</td><td data-label="Installation"><b class="v">Not mentioned</b><small>Installation by certified engineers is offered for solar systems; charger installation is not mentioned.</small></td></tr>
+</tbody></table></div>
+<h3 id="price-ranges">Price ranges from other sources</h3>
+<ul class="com-list"><li><b>Wallbox, 11 kW (device): €1,000–1,200</b> — Given as &#39;realistic for Montenegro&#39; in an EV dealer&#39;s guide that recommends a 7.4 or 11 kW wallbox; VAT not stated.<small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">Kompletan vodič: Kako puniti električno vozilo u Crnoj Gori (2025) | Gold-m Electric Cars</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></li><li><b>Wallbox, 22 kW (device): €1,800–2,200</b> — EV dealer&#39;s guide; VAT not stated.<small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">Kompletan vodič: Kako puniti električno vozilo u Crnoj Gori (2025) | Gold-m Electric Cars</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></li><li><b>Installation: €200–250</b> — EV dealer&#39;s guide; scope of work and VAT not stated.<small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">Kompletan vodič: Kako puniti električno vozilo u Crnoj Gori (2025) | Gold-m Electric Cars</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></li></ul>
+
+<h2 id="public-charging">Public charging</h2>
+<div class="bva-note"><p><strong>How many public chargers: 94 publicly accessible charging points.</strong> Figure from the draft National Policy Framework for alternative fuels infrastructure, as reported: 2,235 kW in total, 88% normal-power chargers, none above 150 kW. Other counts: RTCG (22.07.2026) reports &#39;somewhat fewer than 200&#39; publicly accessible, mostly slow chargers; Electromaps lists 38 stations (crowd-sourced map, latest point added 12.09.2025). RTCG launched an interactive charger map on 24.08.2026 without naming its data source.</p><p><small class="com-src">Source: <a href="https://www.portalanalitika.me/clanak/crna-gora-bez-ultrabrzih-punjaca-za-elektricna-vozila-potrebno-najmanje-14-novih-lokacija" rel="noopener nofollow">Crna Gora bez ultrabrzih punjača za električna vozila, potrebno najmanje 14 novih lokacija</a> · 14.06.2026 · <span class="com-conf is-medium">medium reliability</span></small></p></div>
+<div class="bva-tw"><table class="bva-tbl com-tbl"><thead><tr><th>Network</th><th>Size</th><th>Prices</th><th>Payment</th></tr></thead><tbody>
+<tr><td data-label="Network"><b><a href="https://www.jugopetrol.co.me/" rel="noopener nofollow">EKO fast chargers at Jugopetrol fuel stations</a></b><small>Jugopetrol AD</small></td><td data-label="Size">Seven 50 kW DC chargers announced in December 2024: installed at three locations in Podgorica, in Bijelo Polje and in Tivat, with Žabljak and Herceg Novi planned (Investitor, 11.12.2024). The operator&#39;s website has no EV-charging section.</td><td data-label="Prices"><div class="com-price"><span>DC 50 kW</span> <b>Not published</b><small class="com-src">Source: <a href="https://www.jugopetrol.co.me/" rel="noopener nofollow">jugopetrol.co.me</a> · no date on page (© 2026); checked 23.09.2026 · <span class="com-conf is-high">high reliability</span></small></div></td><td data-label="Payment">Not published</td></tr>
+<tr><td data-label="Network"><b><a href="https://www.evcmontenegro.me/" rel="noopener nofollow">EVC Charge</a></b><small>EVC Montenegro d.o.o.</small><small class="of">App: EVC Charge</small></td><td data-label="Size">Total number of public chargers not published. Example: smart station at the Žičara Kotor–Lovćen car park in Kotor, with a solar carport and battery storage, up to 100 kW and expandable to 200 kW (ecoportal.me, 03.04.2026).</td><td data-label="Prices"><div class="com-price"><span>AC and DC charging</span> <b>Not published</b><small class="com-src">Source: <a href="https://www.evcmontenegro.me/" rel="noopener nofollow">evcmontenegro.me</a> · no date on page (© 2025); checked 23.09.2026 · <span class="com-conf is-high">high reliability</span></small></div></td><td data-label="Payment">Charging is started and monitored in the EVC Charge app (ecoportal.me, 03.04.2026); the company website says it is working on a digital solution for payment by smartphone.</td></tr>
+<tr><td data-label="Network"><b><a href="https://oriontelekom.me/emobility/" rel="noopener nofollow">Orion eMobility</a></b><small>Orion telekom</small><small class="of">App: Orion eMobility</small></td><td data-label="Size">The Montenegrin page states &#39;infrastructure of 300 EV charging points in the country&#39; and &#39;more than 1,000 EV chargers across Serbia and the region&#39;; it is not clear whether the 300 refers to Montenegro, and no Montenegrin locations are listed. The app description (Google Play, updated 03.09.2026) names Montenegro among the countries covered by own and partner stations.</td><td data-label="Prices"><div class="com-price"><span>AC and DC charging</span> <b>Not published</b><small class="com-src">Source: <a href="https://oriontelekom.me/emobility/" rel="noopener nofollow">oriontelekom.me</a> · no date on page (© 2025); checked 23.09.2026 · <span class="com-conf is-high">high reliability</span></small></div></td><td data-label="Payment">Orion eMobility app or RFID card; cards listed: MasterCard, Visa, DinaCard, American Express, Diners.</td></tr>
+<tr><td data-label="Network"><b>Motorway rest areas, A1 &#39;Princeza Ksenija&#39; (Smokovac–Mateševo)</b><small>Not named in sources</small></td><td data-label="Size">Pelev Brijeg: four fast chargers installed (RTCG, 22.07.2026), 4 × 50 kW according to the draft national framework; Gornje Mrke: 4 × 60 kW being installed (Portal Analitika, 14.06.2026).</td><td data-label="Prices"><div class="com-price"><span>DC fast charging</span> <b>Not published</b><small class="com-src">Source: <a href="https://rtcg.me/vijesti/ekologija/866615/manje-od-200-javnih-punjaca-za-elektricna-vozila-ne-postoji-mapa-za-turiste.html" rel="noopener nofollow">rtcg.me</a> · 22.07.2026 · <span class="com-conf is-medium">medium reliability</span></small></div></td><td data-label="Payment">Not published</td></tr>
+<tr><td data-label="Network"><b>Bar solar charging point</b><small>Komunalno preduzeće Bar</small></td><td data-label="Size">One off-grid solar unit with battery storage (Beam EV ARC, installed with Beam Europe, Kraljevo) at the car park in front of the Bar marina entrance: 2 parking spaces, up to 4 vehicles at once; power not stated.</td><td data-label="Prices"><div class="com-price"><span>Charging</span> <b class="pr">Free (no end date stated)</b><small class="com-src">Source: <a href="https://www.sjevercg.me/u-baru-pustena-u-funkciju-solarna-stanica-besplatno-napajanje-elektricnih-automobila/" rel="noopener nofollow">sjevercg.me</a> · 19.05.2026 · <span class="com-conf is-medium">medium reliability</span></small></div></td><td data-label="Payment">Free of charge</td></tr>
+<tr><td data-label="Network"><b>Destination chargers (hotels, shopping centres, marinas, fuel stations)</b><small>Various</small><small class="of">App: Varies</small></td><td data-label="Size">An EV dealer&#39;s guide lists chargers at hotels (Hilton, CUE, Ramada, Splendid, Mediteran, Portonovi, Porto Montenegro), shopping centres (Delta City, Capital Plaza, KIC Budo Tomović) and EKO and Petrol fuel stations. PlugShare shows Porto Montenegro (Tivat) with 3 Tesla Wall Connectors (22 kW) and 3 CEE 32 A sockets (adapter needed).</td><td data-label="Prices"><div class="com-price"><span>Charging</span> <b>Not published</b><small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">goldmelectric.me</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></div></td><td data-label="Payment">Not published</td></tr>
+<tr><td data-label="Network"><b>Public DC charging – price estimate (not an operator price list)</b></td><td data-label="Size">—</td><td data-label="Prices"><div class="com-price"><span>DC charging, general range</span> <b class="pr">€0.30–0.70 per kWh</b><small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">goldmelectric.me</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></div></td><td data-label="Payment">—</td></tr>
+</tbody></table></div>
+
+<h2 id="electricity">Electricity at home</h2>
+<p>What a kilowatt-hour costs at home — the number to compare with public charging.</p>
+<div class="bva-tw"><table class="bva-tbl com-tbl"><thead><tr><th>Tariff</th><th>Price</th><th>Source</th></tr></thead><tbody>
+<tr><td data-label="Tariff">Average household electricity price, 2025<small>From the regulator REGAGEN&#39;s report on the energy sector in 2025, as reported. The article adds that prices have been practically unchanged for about 15 years and that EPCG kept the same supply prices in 2025. The report itself was not yet posted on regagen.co.me (latest there: 2024 report, 31.07.2025).</small></td><td data-label="Price"><b>9.98 euro cents per kWh, all taxes and VAT included</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://kodex.me/cijena-struje-u-crnoj-gori-medju-najnizim-jos-bez-najave-rasta/" rel="noopener nofollow">Cijena struje u Crnoj Gori među najnižim, još bez najave rasta</a> · 15.08.2026 · <span class="com-conf is-medium">medium reliability</span></small></td></tr>
+<tr><td data-label="Tariff">Lower (cheaper) tariff hours for households<small>Per-kWh prices for the higher and lower tariff are not given in the source. From 1 January 2026 total bills rose slightly because of a correction of transmission-system costs.</small></td><td data-label="Price"><b>23:00–07:00 Monday to Saturday; all day on Sunday</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://inflacija.me/me/energetika/jeftina-struja-u-crnoj-gori-termini-ustede" rel="noopener nofollow">Jeftina struja i dalje ključ uštede: Evo kada su najniže tarife</a> · 03.01.2026 · <span class="com-conf is-medium">medium reliability</span></small></td></tr>
+<tr><td data-label="Tariff">Home charging cost per kWh (dealer estimate)<small>Estimate in an EV dealer&#39;s guide; VAT treatment not stated. The same guide estimates €0.30–0.70 per kWh for public DC charging.</small></td><td data-label="Price"><b>€0.10–0.12 per kWh; €0.05–0.06 per kWh at the night tariff</b></td><td data-label="Source"><small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">Kompletan vodič: Kako puniti električno vozilo u Crnoj Gori (2025) | Gold-m Electric Cars</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></td></tr>
+</tbody></table></div>
+
+<h2 id="subsidies">Subsidies</h2>
+<ul class="com-list com-subs"><li><span class="com-status is-closed">Closed</span> <b>Eko-fond – SKLAD E-mobility grants for new electric vehicles, 2026 rounds</b><span><em>Amount:</em> Not confirmed for 2026 (the first 2025 round paid up to €7,200 per passenger car)</span><span><em>Who:</em> Individuals, companies, entrepreneurs and public-sector bodies</span><span><em>Deadline:</em> Rounds published 27.02.2026 and 15.05.2026; both marked &#39;ZATVOREN KONKURS&#39; (closed)</span><span>Selection decisions posted 03.06.2026. No vehicle call was open on Eko-fond&#39;s site on 23.09.2026.</span><small class="com-src">Source: <a href="https://www.eko-fond.co.me/arhiva" rel="noopener nofollow">EKO-FOND Fond za zaštitu životne sredine – Arhiva javnih konkursa</a> · no date on page; entries dated 27.02.2026 and 15.05.2026; checked 23.09.2026 · <span class="com-conf is-high">high reliability</span></small></li><li><span class="com-status is-closed">Closed</span> <b>Eko-fond – SKLAD E-mobility, first round 2025 (for reference)</b><span><em>Amount:</em> Passenger cars (M1): €7,200 up to a €35,000 vehicle price, €6,500 for €35,000–45,000, €4,500 for €45,000–65,000; vans (N1): €6,500 / €4,500; L-category: €300–1,500; total budget €150,000</span><span><em>Who:</em> Montenegrin citizens aged 18+ (max. 1 vehicle), companies and entrepreneurs (max. 4), public institutions (max. 8)</span><span><em>Deadline:</em> 03.07.2025</span><span>Battery-electric vehicles only (0 g/km CO2; hybrids excluded); new vehicles bought from authorised sellers in Montenegro or imported with first registration after 01.01.2024; the vehicle must be kept for at least 24 months.</span><small class="com-src">Source: <a href="https://www.ecoportal.me/subvencije/javni-konkurs-za-dodjelu-bespovratnih-sredstava-za-kupovinu-novih-elektricnih-vozila-za-fizicka-lica-privredna-drustva-preduzetnike-ce-i-javni-sektor-sklad-e-mobility/" rel="noopener nofollow">Javni konkurs za dodjelu bespovratnih sredstava za kupovinu novih električnih vozila za fizička lica, privredna društva, preduzetnike/ce i javni sektor (SKLAD E-mobility) – ecoportal.me</a> · 20.05.2025 · <span class="com-conf is-medium">medium reliability</span></small></li><li><span class="com-status is-closed">Closed</span> <b>Eko-fond – SKLAD E-mobility results, 2025</b><span><em>Amount:</em> €300,000 awarded in two rounds for 53 new electric vehicles (26 + 27)</span><span><em>Who:</em> Individuals and legal entities</span><span>Eko-fond reports about €434,000 awarded across three e-mobility programmes run in cooperation with Slovenia, and said a new call would follow once the remaining budget was confirmed.</span><small class="com-src">Source: <a href="https://eko-fond.co.me/vijesti-template?id=427" rel="noopener nofollow">Boljević: Sljedeća godina biće u znaku velikih ulaganja u energetsku efikasnost i e-mobilnost</a> · 17.11.2025 · <span class="com-conf is-high">high reliability</span></small></li><li><span class="com-status is-none">None</span> <b>Subsidy for household (home) chargers</b><span>No Eko-fond call for household chargers appears among its current or archived calls; the only charging-station call (published 19.02.2024) was for businesses, entrepreneurs and the public sector.</span><small class="com-src">Source: <a href="https://www.eko-fond.co.me/arhiva" rel="noopener nofollow">EKO-FOND Fond za zaštitu životne sredine – Arhiva javnih konkursa</a> · checked 23.09.2026 · <span class="com-conf is-medium">medium reliability</span></small></li><li><span class="com-status is-unconfirmed">Unconfirmed</span> <b>Eko-fond funds for municipal public chargers</b><span><em>Amount:</em> €150,000 made available to municipalities; only Bar (€13,000) and Cetinje (€12,000) used it</span><span><em>Who:</em> Municipalities</span><span><em>Deadline:</em> Not stated</span><span>Programme dates are not given in the source.</span><small class="com-src">Source: <a href="https://rtcg.me/vijesti/ekologija/866615/manje-od-200-javnih-punjaca-za-elektricna-vozila-ne-postoji-mapa-za-turiste.html" rel="noopener nofollow">Manje od 200 javnih punjača za električna vozila, ne postoji mapa za turiste (RTCG)</a> · 22.07.2026 · <span class="com-conf is-medium">medium reliability</span></small></li></ul>
+
+<h2 id="buildings">Charging in an apartment building</h2>
+<p>What the law says about a charger in a shared garage or parking lot — who has to agree, who pays for the electricity and how it is metered.</p>
+<ul class="com-list"><li><b>Legal definition of a charging station</b><span>Montenegro&#39;s Energy Law defines a charging station as an interface through which one electric vehicle can be charged, or have its battery swapped, at a given time.</span><span><em>Law:</em> Zakon o energetici (Energy Law), Official Gazette of Montenegro 28/25 and 3/26, Art. 7, point 47</span><small class="com-src">Source: <a href="https://regagen.co.me/wp-content/uploads/2025/10/Zakon-o-energetici.pdf" rel="noopener nofollow">Zakon o energetici – consolidated text (Katalog propisa 2026, hosted by REGAGEN)</a> · no date on page; consolidated to Official Gazette 3/26 of 09.01.2026 · <span class="com-conf is-high">high reliability</span></small></li><li><b>What installers show</b><span>EVC Montenegro&#39;s project list shows two home-charger installations (Podgorica, Tuzi municipality) alongside hotels, public institutions and car dealers; no multi-unit residential building is listed.</span><small class="com-src">Source: <a href="https://www.evcmontenegro.me/project/" rel="noopener nofollow">Projekti – EVC Montenegro</a> · no date on page; checked 23.09.2026 · <span class="com-conf is-high">high reliability</span></small></li><li><b>Prerequisites named in a dealer guide</b><span>An EV dealer&#39;s guide lists a parking space &#39;in a building or a house&#39;, single- or three-phase supply, a 7.4 or 11 kW wallbox and protection (fuse and residual-current device) as what a home charger needs. It does not address co-owner approval in apartment buildings.</span><small class="com-src">Source: <a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">Kompletan vodič: Kako puniti električno vozilo u Crnoj Gori (2025) | Gold-m Electric Cars</a> · 19.11.2025 · <span class="com-conf is-low">low reliability</span></small></li></ul>
+
+<h2 id="plans">National plans and EU rules</h2>
+<ul class="com-list"><li><span>Under the EU AFIR rules, charging points on TEN-T corridors must be at most 60 km apart; Montenegro&#39;s draft National Policy Framework for alternative fuels infrastructure (Ministry of Transport with the Ministry of Energy) says at least 14 car-charging locations along the TEN-T network and 11 truck-charging hubs (27 MW in total) are needed.</span><small class="com-src">Source: <a href="https://borba.me/eu-trazi-od-crne-gore-punionice-za-elektricna-vozila-na-svakih-60-kilometara/" rel="noopener nofollow">borba.me</a> · 16.06.2026 · <span class="com-conf is-medium">medium reliability</span></small></li><li><span>The framework, Montenegro&#39;s first aligned with AFIR (Regulation (EU) 2023/1804), is EU-funded and prepared by a consortium led by DAI Global Belgium with GIZ and ENOVA; it was presented at a stakeholder workshop in Podgorica on 16.09.2026.</span><small class="com-src">Source: <a href="https://www.evropskakuca.me/me/radionica-nacionalni-okvir-politike-za-infrastrukturu-za-alternativna-goriva-16-septembra-u-podgorici/" rel="noopener nofollow">evropskakuca.me</a> · 15.09.2026 · <span class="com-conf is-high">high reliability</span></small></li><li><span>A dedicated Law on Alternative Fuels Infrastructure is being prepared, with adoption by Parliament expected by the end of 2026; the 2030 goal is about 35,000 electric passenger cars with about 50 fast and 500 slow chargers.</span><small class="com-src">Source: <a href="https://rtcg.me/vijesti/ekologija/866615/manje-od-200-javnih-punjaca-za-elektricna-vozila-ne-postoji-mapa-za-turiste.html" rel="noopener nofollow">rtcg.me</a> · 22.07.2026 · <span class="com-conf is-medium">medium reliability</span></small></li><li><span>The draft framework also proposes a single national portal for permits with legally fixed maximum decision times, targeted financial incentives for charge-point operators, and minimum user rights, including ad hoc charging without a prior contract.</span><small class="com-src">Source: <a href="https://borba.me/eu-trazi-od-crne-gore-punionice-za-elektricna-vozila-na-svakih-60-kilometara/" rel="noopener nofollow">borba.me</a> · 16.06.2026 · <span class="com-conf is-medium">medium reliability</span></small></li></ul>
+
+<h2 id="gaps">What we could not verify</h2>
+<p>Gaps we know about. If you can fill one with a public source, write to <a href="mailto:hello@blokvolt.com">hello@blokvolt.com</a>.</p>
+<ul class="com-list com-gaps"><li>Home chargers: only three Montenegrin sellers/installers could be verified, and none publishes device or installation prices; the only price ranges come from an EV dealer&#39;s guide.</li><li>Car importers: Jadran Auto d.o.o. (Hyundai) has a wallbox information page without models, prices or an installation offer; Toyota Montenegro&#39;s charging page links to the Croatian Toyota HomeCharge page; the BMW Voli and MINI home-charging pages returned 404.</li><li>Checked without an EV-charger offer: retailers Tehno Planet and Tehnomax; electrical wholesalers/contractors Electro Group, ENEL PS CG, Telemont and Vigoris Ecotech. Serbian installers Elektropunjači/Charge&amp;GO and ElektroMil (Niš) do not name Montenegro as a service area.</li><li>Did not load: elvod.me (Elektrovod, DNS error), popovicelektrosistem.co.me (certificate error), evcmontenegro.me/products/ (server error 500), paragraf.me (403), pvportal.me (401), epcg.com tariff pages (404; the site renders via JavaScript).</li><li>Public charging prices: no operator price list found for EKO/Jugopetrol, EVC Montenegro, Orion eMobility or the motorway chargers; the operator of the motorway chargers (Pelev Brijeg, Gornje Mrke) is not named in any source.</li><li>Payment by bank card directly at a Montenegrin charger is not confirmed; coverage of Montenegrin chargers by roaming apps (Charge&amp;GO, Electroverse, Shell Recharge, Plugsurfing, Chargemap) is not confirmed.</li><li>Electricity: EPCG&#39;s per-kWh prices for the higher and lower tariff were not retrieved; REGAGEN&#39;s 2025 energy-sector report (source of the 9.98 c/kWh figure) is not yet posted on regagen.co.me.</li><li>Registrations: no 2026 year-to-date count of new battery-electric cars was found. Monstat&#39;s quarterly releases (Q1 2026 of 14.05.2026, Q2 2026 of 12.08.2026) contain a table by propulsion energy, but its figures could not be extracted reliably and were not used. The annual Monstat release does not split electric-only vehicles into passenger cars and other categories.</li><li>Subsidies: amounts, budgets and deadlines of the 2026 SKLAD E-mobility rounds (published 27.02.2026 and 15.05.2026) were not confirmed; only their dates and closed status were seen.</li><li>Apartment buildings: the text of the Law on Housing and Maintenance of Residential Buildings (Zakon o stanovanju i održavanju stambenih zgrada) was not retrieved, so rules on co-owner consent, cost sharing and sub-metering for chargers in shared garages are not confirmed. No building-specific charging rules were found in the consolidated Energy Law text checked, and the distribution operator CEDIS&#39;s website shows no guidance on connecting EV chargers.</li><li>No company offering a building-level (multi-unit residential) charging or metering service was found.</li><li>Method: the web-search quota ran out during the check; the remaining items were verified by fetching known URLs only.</li></ul>
+
+<h2 id="sources">Sources</h2>
+<div class="bva-fotos"><details><summary>All 21 sources for this page</summary><ul class="bva-src"><li><a href="https://www.monstat.org/uploads/files/Saobracaj/2025/Publikacija%20-%20Godi%C5%A1nja%20statistika%20saobra%C4%87aja%20za%202025.%20godinu.pdf" rel="noopener nofollow">Godišnja statistika saobraćaja, skladištenja i veza 2025 (Monstat)</a> — April 2026</li><li><a href="https://investitor.me/2026/08/17/crna-gora-pri-evropskom-dnu-elektricni-automobili-cinili-tek-18-novih-registracija/" rel="noopener nofollow">Crna Gora pri evropskom dnu: Električni automobili činili tek 1,8% novih registracija</a> — 17.08.2026</li><li><a href="https://borba.me/eu-trazi-od-crne-gore-punionice-za-elektricna-vozila-na-svakih-60-kilometara/" rel="noopener nofollow">EU traži od Crne Gore: Punionice za električna vozila na svakih 60 kilometara</a> — 16.06.2026</li><li><a href="https://www.portalanalitika.me/clanak/crna-gora-bez-ultrabrzih-punjaca-za-elektricna-vozila-potrebno-najmanje-14-novih-lokacija" rel="noopener nofollow">Crna Gora bez ultrabrzih punjača za električna vozila, potrebno najmanje 14 novih lokacija</a> — 14.06.2026</li><li><a href="https://www.tesla.com/findus/list/superchargers/Montenegro" rel="noopener nofollow">Tesla Superchargers in Montenegro</a> — no date on page; checked 23.09.2026</li><li><a href="https://www.goldmelectric.me/novosti/kako-puniti-elektricno-vozilo-crna-gora" rel="noopener nofollow">Kompletan vodič: Kako puniti električno vozilo u Crnoj Gori (2025) | Gold-m Electric Cars</a> — 19.11.2025</li><li><a href="https://www.jugopetrol.co.me/" rel="noopener nofollow">jugopetrol.co.me</a> — no date on page (© 2026); checked 23.09.2026</li><li><a href="https://www.evcmontenegro.me/" rel="noopener nofollow">evcmontenegro.me</a> — no date on page (© 2025); checked 23.09.2026</li><li><a href="https://oriontelekom.me/emobility/" rel="noopener nofollow">oriontelekom.me</a> — no date on page (© 2025); checked 23.09.2026</li><li><a href="https://rtcg.me/vijesti/ekologija/866615/manje-od-200-javnih-punjaca-za-elektricna-vozila-ne-postoji-mapa-za-turiste.html" rel="noopener nofollow">rtcg.me</a> — 22.07.2026</li><li><a href="https://www.sjevercg.me/u-baru-pustena-u-funkciju-solarna-stanica-besplatno-napajanje-elektricnih-automobila/" rel="noopener nofollow">sjevercg.me</a> — 19.05.2026</li><li><a href="https://kodex.me/cijena-struje-u-crnoj-gori-medju-najnizim-jos-bez-najave-rasta/" rel="noopener nofollow">Cijena struje u Crnoj Gori među najnižim, još bez najave rasta</a> — 15.08.2026</li><li><a href="https://inflacija.me/me/energetika/jeftina-struja-u-crnoj-gori-termini-ustede" rel="noopener nofollow">Jeftina struja i dalje ključ uštede: Evo kada su najniže tarife</a> — 03.01.2026</li><li><a href="https://www.eko-fond.co.me/arhiva" rel="noopener nofollow">EKO-FOND Fond za zaštitu životne sredine – Arhiva javnih konkursa</a> — no date on page; entries dated 27.02.2026 and 15.05.2026; checked 23.09.2026</li><li><a href="https://www.ecoportal.me/subvencije/javni-konkurs-za-dodjelu-bespovratnih-sredstava-za-kupovinu-novih-elektricnih-vozila-za-fizicka-lica-privredna-drustva-preduzetnike-ce-i-javni-sektor-sklad-e-mobility/" rel="noopener nofollow">Javni konkurs za dodjelu bespovratnih sredstava za kupovinu novih električnih vozila za fizička lica, privredna društva, preduzetnike/ce i javni sektor (SKLAD E-mobility) – ecoportal.me</a> — 20.05.2025</li><li><a href="https://eko-fond.co.me/vijesti-template?id=427" rel="noopener nofollow">Boljević: Sljedeća godina biće u znaku velikih ulaganja u energetsku efikasnost i e-mobilnost</a> — 17.11.2025</li><li><a href="https://regagen.co.me/wp-content/uploads/2025/10/Zakon-o-energetici.pdf" rel="noopener nofollow">Zakon o energetici – consolidated text (Katalog propisa 2026, hosted by REGAGEN)</a> — no date on page; consolidated to Official Gazette 3/26 of 09.01.2026</li><li><a href="https://www.evcmontenegro.me/project/" rel="noopener nofollow">Projekti – EVC Montenegro</a> — no date on page; checked 23.09.2026</li><li><a href="https://www.evropskakuca.me/me/radionica-nacionalni-okvir-politike-za-infrastrukturu-za-alternativna-goriva-16-septembra-u-podgorici/" rel="noopener nofollow">evropskakuca.me</a> — 15.09.2026</li><li><a href="https://www.goldmelectric.me/punjaci" rel="noopener nofollow">Gold-m Electric Cars — company website</a> — no date on page (© 2025); checked 23.09.2026</li><li><a href="https://solar-shop.me/product-category/punjaci-za-elektricna-vozila/" rel="noopener nofollow">NEMO-MONT (Solar-Shop.me) — company website</a> — no date on page (© 2021); checked 23.09.2026</li></ul></details></div>
+
+<div class="bva-note"><p><strong>Something changed or is missing?</strong> We add companies and correct data from public sources and on request — free, by the same rules for everyone. Send the company name, website and city, or the correction with a link, to <a href="mailto:hello@blokvolt.com">hello@blokvolt.com</a>.</p></div>
+<p class="com-other">Other countries: <a href="/serbia/">Serbia</a> · <a href="/bosnia-and-herzegovina/">Bosnia and Herzegovina</a> · <a href="/north-macedonia/">North Macedonia</a> · <a href="/croatia/">Croatia</a> · <a href="/slovenia/">Slovenia</a></p>
+</div></div><div class="v3-foot"><div class="v3-fcard"><div class="w3"><div class="v3-fgrid"><div class="v3-fintro"><p>BlokVolt is an independent guide to EV charging in Serbia and the Western Balkans: who sells and installs home chargers, public networks and prices, electricity at home, subsidies and the rules in apartment buildings — every figure with a source and a check date. The site is run by the team of Evolako, a home-charger installer in Serbia; every company is shown by the same rules, without ratings or paid placements.</p></div><div class="v3-fcol"><div>Countries</div><a href="/serbia/">Serbia</a><a href="/montenegro/">Montenegro</a><a href="/bosnia-and-herzegovina/">Bosnia and Herzegovina</a><a href="/north-macedonia/">North Macedonia</a><a href="/croatia/">Croatia</a><a href="/slovenia/">Slovenia</a></div><div class="v3-fcol"><div>Serbia in detail</div><a href="https://www.blokvolt.rs/en/">blokvolt.rs — English</a><a href="https://www.blokvolt.rs/">blokvolt.rs — Srpski</a><a href="https://www.blokvolt.rs/ru/">blokvolt.rs — Русский</a><a href="https://www.blokvolt.rs/en/metodologija/">Methodology</a></div><div class="v3-fcol"><div>Contact</div><a href="/partners/">For companies and suppliers</a><a href="https://www.evolako.rs/?lang=en">Charger installation in Serbia — evolako.rs</a><a aria-label="Copy email to clipboard" class="copy-email-button" data-copy-email="hello@blokvolt.com" href="mailto:hello@blokvolt.com"><span data-osmo="copy-ikona"></span><span data-osmo="copy-wrap"><span data-osmo="copy-el">hello@blokvolt.com</span><span data-osmo="copy-el">Copy address</span><span data-osmo="copy-el">Copied ✓</span></span></a></div></div></div><div aria-hidden="true" class="v3-word" translate="no"><span>blok</span><span>volt</span></div></div><div class="v3-legal">© 2026 BlokVolt · independent guide to EV charging in Serbia and the Western Balkans · data checked 23.09.2026</div></div></div>
+<script src="/assets/vendor/gsap.min.js" defer></script>
+<script src="/assets/meganav.js?v=05c164f9a7" defer></script>
+<script src="/assets/site.js?v=47fe88dab1" defer></script>
 </body>
 </html>
