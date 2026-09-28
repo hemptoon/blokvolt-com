@@ -9,6 +9,9 @@
 <link rel="alternate" hreflang="hr-HR" href="https://blokvolt.com/hr/punjenje-kod-kuce/">
 <link rel="alternate" hreflang="bs-BA" href="https://blokvolt.com/ba/punjenje-kod-kuce/">
 <link rel="alternate" hreflang="sr-ME" href="https://blokvolt.com/me/punjenje-kod-kuce/">
+<link rel="alternate" hreflang="sq-AL" href="https://blokvolt.com/al/karikimi-ne-shtepi/">
+<link rel="alternate" hreflang="sq" href="https://blokvolt.com/xk/karikimi-ne-shtepi/">
+<link rel="alternate" hreflang="mk-MK" href="https://blokvolt.com/mk/polnenje-doma/">
 <link rel="alternate" hreflang="sr" href="https://www.blokvolt.rs/alati/kalkulator-troskova/">
 <link rel="alternate" hreflang="en" href="https://www.blokvolt.rs/en/alati/kalkulator-troskova/">
 <link rel="alternate" hreflang="ru" href="https://www.blokvolt.rs/ru/alati/kalkulator-troskova/">
@@ -28,8 +31,8 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/onest-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/bv.css?v=74bdf1b6a2">
-<link rel="stylesheet" href="/assets/com.css?v=06a5153bba">
+<link rel="stylesheet" href="/assets/bv.css?v=3a17f81b00">
+<link rel="stylesheet" href="/assets/com.css?v=cc638651e9">
 <script type="application/ld+json">{
  "@context": "https://schema.org",
  "@graph": [
@@ -52,6 +55,9 @@
 <li role="none"><a role="menuitem" hreflang="hr-HR" lang="hr-HR" href="/hr/">Hrvatska</a></li>
 <li role="none"><a role="menuitem" hreflang="bs-BA" lang="bs-BA" href="/ba/">Bosna i Hercegovina</a></li>
 <li role="none"><a role="menuitem" hreflang="sr-ME" lang="sr-ME" href="/me/" aria-current="true" class="is--on">Crna Gora</a></li>
+<li role="none"><a role="menuitem" hreflang="sq-AL" lang="sq-AL" href="/al/">Shqipëria</a></li>
+<li role="none"><a role="menuitem" hreflang="sq" lang="sq" href="/xk/">Kosova</a></li>
+<li role="none"><a role="menuitem" hreflang="mk-MK" lang="mk-MK" href="/mk/">Северна Македонија</a></li>
 </ul></div>
 <button class="ib burger" type="button" aria-controls="hd-nav" aria-expanded="false" aria-label="Meni"><svg class="i " viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </div>
@@ -68,7 +74,7 @@
 <div class="field"><label for="c-kwh100">Potrošnja, kWh na 100 km</label><input class="input" type="number" id="c-kwh100" min="5" max="40" step="0.5" value="17" inputmode="decimal"><span class="hint">Piše u računaru automobila.</span></div>
 </div></div>
 <div class="box"><h2>Struja kod kuće</h2><div class="fields2">
-<div class="field"><label for="c-tariff">Tarifa</label><select class="select" id="c-tariff"><option value="nt" selected>Dvotarifno, niža tarifa (noć)</option><option value="vt">Dvotarifno, viša tarifa (dan)</option><option value="custom">Upisaću cijenu sa računa</option></select></div>
+<div class="field wide"><label for="c-tariff">Tarifa</label><select class="select" id="c-tariff"><option value="nt" selected>Dvotarifno, niža tarifa (noć)</option><option value="vt">Dvotarifno, viša tarifa (dan)</option><option value="custom">Upisaću cijenu sa računa</option></select></div>
 <div class="field" id="w-custom" hidden><label for="c-custom">Cijena kWh sa računa, €</label><input class="input" type="number" id="c-custom" min="0" max="5" step="0.001" value="0.0694" inputmode="decimal"></div>
 </div>
 <p class="note">Kilovat-sat sa naknadama i PDV-om: <b id="o-hp"></b></p>
@@ -94,13 +100,13 @@
 </aside>
 </form>
 <noscript><p class="note">Kalkulatoru treba JavaScript. Iznad je primjer sa zadatim vrijednostima.</p></noscript>
-<script id="calc-data" type="application/json">{"tariffs": [{"id": "nt", "name": "Dvotarifno, niža tarifa (noć)", "allin": 0.0694, "parts": "energija 0,0260 + mreža i gubici 0,0313 €, + PDV 21 % — indikativno"}, {"id": "vt", "name": "Dvotarifno, viša tarifa (dan)", "allin": 0.1387, "parts": "energija 0,0520 + mreža i gubici 0,0626 €, + PDV 21 % — indikativno"}], "fuel": {"petrol": 1.74, "diesel": 1.95, "date": "22.09.2026.", "src": "https://investitor.me/2026/09/21/gorivo-od-utorka-poskupljuje-uprkos-nizim-akcizama-dizel-skace-na-195-eura/", "src_label": "Investitor.me — maksimalne cijene goriva od 22.09.2026."}, "d": {"km": 1200, "kwh100": 17, "loss": 10, "share": 0, "tariff": "nt", "pub": 0.4, "l100_petrol": 6.5, "l100_diesel": 5.5, "chips": [], "pub_hint": "Operateri u Crnoj Gori ne objavljuju cijene javnog punjenja: upišite cijenu koju ste platili."}, "cur": "€", "dec": ",", "thou": ".", "T": {"petrol": "Eurosuper 95", "diesel": "Eurodizel", "pm": "€ mjesečno", "py": "€ godišnje"}}</script>
+<script id="calc-data" type="application/json">{"tariffs": [{"id": "nt", "name": "Dvotarifno, niža tarifa (noć)", "allin": 0.0694, "parts": "energija 0,0260 + mreža i gubici 0,0313 €, + PDV 21 % — indikativno"}, {"id": "vt", "name": "Dvotarifno, viša tarifa (dan)", "allin": 0.1387, "parts": "energija 0,0520 + mreža i gubici 0,0626 €, + PDV 21 % — indikativno"}], "fuel": {"petrol": 1.74, "diesel": 1.95, "date": "22.09.2026.", "src": "https://investitor.me/2026/09/21/gorivo-od-utorka-poskupljuje-uprkos-nizim-akcizama-dizel-skace-na-195-eura/", "src_label": "Investitor.me — maksimalne cijene goriva od 22.09.2026."}, "d": {"km": 1200, "kwh100": 17, "loss": 10, "share": 0, "tariff": "nt", "pub": 0.4, "l100_petrol": 6.5, "l100_diesel": 5.5, "chips": [], "pub_hint": "Operateri u Crnoj Gori ne objavljuju cijene javnog punjenja: upišite cijenu koju ste platili."}, "cur": "€", "dec": ",", "thou": ".", "trim": false, "T": {"petrol": "Eurosuper 95", "diesel": "Eurodizel", "pm": "€ mjesečno", "py": "€ godišnje"}}</script>
 <script>
 (function(){
- var D=JSON.parse(document.getElementById('calc-data').textContent),T=D.T,C=D.cur;
+ var D=JSON.parse(document.getElementById('calc-data').textContent),T=D.T,C=D.cur,M=D.trim?0:2;
  function $(id){return document.getElementById(id)}
  function num(id){var v=parseFloat(String($(id).value).replace(',','.'));return isFinite(v)?v:0}
- function fmt(x,d){d=d||0;var s=Math.abs(x).toFixed(d).split('.');s[0]=s[0].replace(/\B(?=(\d{3})+(?!\d))/g,D.thou);return (x<0?'−':'')+s[0]+(d?D.dec+s[1]:'')}
+ function fmt(x,d){d=d||0;var s=Math.abs(x).toFixed(d).split('.'),neg=x<0&&+s.join('.')>0;if(D.trim&&s[1]){s[1]=s[1].replace(/0+$/,'');if(!s[1])d=0}s[0]=s[0].replace(/\B(?=(\d{3})+(?!\d))/g,D.thou);return (neg?'−':'')+s[0]+(d?D.dec+s[1]:'')}
  function tariff(){var id=$('c-tariff').value;for(var i=0;i<D.tariffs.length;i++){if(D.tariffs[i].id===id)return D.tariffs[i]}return null}
  function hp(){var t=tariff();return t?t.allin:num('c-custom')}
  var chips=[].slice.call(document.querySelectorAll('.calc-chips button'));
@@ -109,12 +115,12 @@
   var need=km*k100/100,pubKwh=need*share,homeKwh=need*(1-share)*(1+loss),p=hp(),homeCost=homeKwh*p,pubCost=pubKwh*pub,ev=homeCost+pubCost;
   var ice=km*num('c-l100')/100*num('c-lp'),save=ice-ev;
   $('o-hp').textContent=fmt(p,3)+' '+C;$('o-share').textContent=Math.round(share*100)+' %';
-  $('o-ev').textContent=fmt(ev,2)+' '+C;$('o-ev100').textContent=km>0?fmt(ev/km*100,2):'0';
-  $('o-ice').textContent=fmt(ice,2)+' '+C;$('o-ice100').textContent=km>0?fmt(ice/km*100,2):'0';
+  $('o-ev').textContent=fmt(ev,M)+' '+C;$('o-ev100').textContent=km>0?fmt(ev/km*100,M):'0';
+  $('o-ice').textContent=fmt(ice,M)+' '+C;$('o-ice100').textContent=km>0?fmt(ice/km*100,M):'0';
   $('o-fuelname').textContent=$('c-fuel').value==='diesel'?T.diesel:T.petrol;
-  $('o-save').textContent=fmt(save,2)+' '+T.pm;$('o-save-y').textContent=fmt(save*12,0)+' '+T.py;
-  $('o-homekwh').textContent=fmt(homeKwh);$('o-homecost').textContent=fmt(homeCost,2)+' '+C;
-  $('o-pubkwh').textContent=fmt(pubKwh);$('o-pubcost').textContent=fmt(pubCost,2)+' '+C;
+  $('o-save').textContent=fmt(save,M)+' '+T.pm;$('o-save-y').textContent=fmt(save*12,0)+' '+T.py;
+  $('o-homekwh').textContent=fmt(homeKwh);$('o-homecost').textContent=fmt(homeCost,M)+' '+C;
+  $('o-pubkwh').textContent=fmt(pubKwh);$('o-pubcost').textContent=fmt(pubCost,M)+' '+C;
  }
  $('c-tariff').addEventListener('change',function(){$('w-custom').hidden=this.value!=='custom';calc()});
  $('c-fuel').addEventListener('change',function(){var dz=this.value==='diesel';$('c-lp').value=dz?D.fuel.diesel:D.fuel.petrol;$('c-l100').value=dz?D.d.l100_diesel:D.d.l100_petrol;calc()});
@@ -135,7 +141,7 @@
 <ul>
 <li><strong>Niža tarifa.</strong> Niža tarifa: od 23 do 7 h (prema starijim izvorima i nedjeljom cijeli dan). Noćno punjenje je upola jeftinije od dnevnog.</li>
 <li><strong>Fiksni dio</strong> mrežne naknade (0,84 € mjesečno s PDV-om za odobrenu snagu do 8 kW) plaćate i bez auta, pa ga kalkulator ne računa.</li>
-<li><strong>Popusti.</strong> EPCG redovnim platišama daje popuste na račun; uslove za 2026. nismo mogli provjeriti, pa nisu uračunati.</li>
+<li><strong>Popusti.</strong> EPCG redovnim platišama daje popuste na račun; uslove za 2026. nije bilo moguće provjeriti, pa nisu uračunati.</li>
 </ul>
 <details>
 <summary>Kako se računa</summary>
@@ -152,7 +158,7 @@
 <footer class="ft"><div class="wrap">
 <div class="ft-in">
 <div><a class="logo" href="/me/" aria-label="BlokVolt — početna"><svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#0B0F17"/><path d="M27 10 14 36h12l-4 18 20-28H30l4-16z" fill="#D9F45B"/></svg><span translate="no">blok<b>volt</b></span></a>
-<p>Gdje napuniti električni automobil u Crnoj Gori, koliko to košta i šta kažu propisi — nezavisno i sa izvorima.</p>
+<p>Gdje napuniti električni automobil u Crnoj Gori, koliko to košta i šta kažu propisi — sa izvorima i datumima.</p>
 <a class="ft-mail" href="mailto:hello@blokvolt.com"><svg class="i " viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg><span translate="no">hello@blokvolt.com</span></a>
 </div>
 <div><h2>Punjenje</h2><ul>
@@ -164,11 +170,14 @@
 <li><a href="/me/statistika/">Statistika</a></li>
 </ul></div>
 <div><h2>BlokVolt</h2><ul>
-<li><a href="/me/metodologija/">Kako radimo</a></li>
+<li><a href="/me/metodologija/">Metodologija</a></li>
 <li><a href="/" hreflang="en" lang="en">English — region</a></li>
 <li><a href="https://www.blokvolt.rs/" hreflang="sr" lang="sr">Srbija — blokvolt.rs</a></li>
 <li><a href="/hr/" hreflang="hr-HR" lang="hr">Hrvatska</a></li>
 <li><a href="/ba/" hreflang="bs-BA" lang="bs">Bosna i Hercegovina</a></li>
+<li><a href="/al/" hreflang="sq-AL" lang="sq">Shqipëria</a></li>
+<li><a href="/xk/" hreflang="sq" lang="sq">Kosova</a></li>
+<li><a href="/mk/" hreflang="mk-MK" lang="mk">Северна Македонија</a></li>
 <li><a href="mailto:hello@blokvolt.com?subject=Ispravka%20%28blokvolt.com/me%29">Prijavite grešku</a></li>
 </ul></div>
 </div>
