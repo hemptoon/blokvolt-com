@@ -1,0 +1,121 @@
+# blokvolt.com is built from hemptoon/blokvolt-rs and published here by this workflow — nobody uploads files by hand
+# (RUNBOOK 3.10 in hemptoon/blokvolt-rs). Every hour, and by hand (Actions → Build and deploy → Run workflow), it looks at
+# the branches main and region-data of hemptoon/blokvolt-rs. When either has moved since the last build
+# (.github/built-from.json here), it:
+#   1. builds www.blokvolt.rs (build.py — only so the links from blokvolt.com into it are checked) and blokvolt.com
+#      (scripts/gen_com.py), with the neighbours' station lists fresh from region-data (scripts/com_maps.py: a list that
+#      shrinks below 80 % of the committed one keeps the committed version);
+#   2. commits the built site to main here — the history, and the fallback if Pages is ever switched back to "Deploy from a
+#      branch"; files that exist only here are kept (this workflow never deletes);
+#   3. deploys that tree to GitHub Pages (Settings → Pages → Source: "GitHub Actions"; custom domain blokvolt.com).
+# No secrets: hemptoon/blokvolt-rs is public, and this repository's own GITHUB_TOKEN commits here and deploys Pages.
+# Security (as in blokvolt-rs, RUNBOOK 3.33): actions pinned to commit hashes; to update one, take a release at least a week
+# old (git ls-remote --tags https://github.com/actions/<name>) and change the pin here.
+name: Build and deploy
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Build and deploy even if blokvolt-rs has not changed'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      deploy: ${{ steps.state.outputs.go }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: site
+      - name: Has blokvolt-rs moved since the last build?
+        id: state
+        env:
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
+        run: |
+          rs=$(git ls-remote https://github.com/hemptoon/blokvolt-rs refs/heads/main | cut -f1)
+          rd=$(git ls-remote https://github.com/hemptoon/blokvolt-rs refs/heads/region-data | cut -f1)
+          if [ -z "$rs" ] || [ -z "$rd" ]; then echo "::error::cannot read hemptoon/blokvolt-rs"; exit 1; fi
+          go=$(RS="$rs" RD="$rd" python3 -c '
+          import json, os
+          try:
+              old = json.load(open("site/.github/built-from.json"))
+          except Exception:
+              old = {}
+          same = old.get("blokvolt_rs") == os.environ["RS"] and old.get("region_data") == os.environ["RD"]
+          print("false" if same and os.environ.get("FORCE") != "true" else "true")')
+          echo "rs=$rs" >> "$GITHUB_OUTPUT"
+          echo "rd=$rd" >> "$GITHUB_OUTPUT"
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+          echo "blokvolt-rs main ${rs:0:7}, region-data ${rd:0:7} → build: $go"
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        if: steps.state.outputs.go == 'true'
+        with:
+          repository: hemptoon/blokvolt-rs
+          ref: ${{ steps.state.outputs.rs }}
+          path: src
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        if: steps.state.outputs.go == 'true'
+        with:
+          python-version: '3.13'
+      - name: Build blokvolt.rs (for the link check) and blokvolt.com
+        if: steps.state.outputs.go == 'true'
+        working-directory: src
+        run: |
+          pip install -q jinja2 markdown beautifulsoup4 pillow
+          bash scripts/fetch_fonts.sh >/dev/null
+          python3 scripts/com_maps.py
+          python3 build.py > /dev/null
+          python3 scripts/gen_com.py
+      - name: Commit the built site here (never deletes)
+        if: steps.state.outputs.go == 'true'
+        env:
+          RS: ${{ steps.state.outputs.rs }}
+          RD: ${{ steps.state.outputs.rd }}
+        run: |
+          rsync -a src/dist-com/ site/
+          mkdir -p site/.github
+          python3 -c '
+          import json, os, datetime
+          json.dump({"blokvolt_rs": os.environ["RS"], "region_data": os.environ["RD"],
+                     "built": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")},
+                    open("site/.github/built-from.json", "w"), indent=1)'
+          cd site
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'nothing new to commit'
+          else
+            git commit -q -m "Build from hemptoon/blokvolt-rs@${RS:0:7} (region-data ${RD:0:7})"
+            git push -q origin HEAD:main
+          fi
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: steps.state.outputs.go == 'true'
+        with:
+          path: site
+  deploy:
+    needs: build
+    if: needs.build.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
