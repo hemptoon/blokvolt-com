@@ -4,14 +4,15 @@
    who charges free), drivers' reports, ratings and photos from /api (Cloudflare D1).
    On blokvolt.rs, cfg.region adds the neighbouring countries (/assets/map/region.json: open data of the blokvolt.com
    sections) as a second, quieter layer: no prices, reports or checks there, and each card links to that country's map.
-   Favourites (★) are station ids kept in this browser (localStorage 'bv:fav'), and so is the "Imam Teslu" switch
-   ('bv:tesla'). Only a reader signed in to "Moj BlokVolt" (cookie bv_in) also keeps them in the account (/api/nalog/*,
+   Favourites (★) are station ids kept in this browser (localStorage 'bv:fav'), and so is "Moj auto" ('bv:car', below).
+   Only a reader signed in to "Moj BlokVolt" (cookie bv_in) also keeps them in the account (/api/nalog/*,
    'bv:fav-owner': whose list it is; docs/RUNBOOK.md 3.27); without the cookie nothing is sent anywhere.
    Since 06.10.2026: "Najbliži punjač" (the three nearest chargers a driver can use, and a route; the navigation app chosen
-   last is kept as 'bv:nav'), "Moj auto" (the reader's car, 'bv:car', with the cars from /assets/map/auta.json: the cost per
+   last is kept as 'bv:nav2'), "Moj auto" (the reader's car, 'bv:car', with the cars from /assets/map/auta.json: the cost per
    km at every charger, compared with petrol and with charging at home), the network's own price of every connector
    (mreze.json: pr), hours with "open now" (oh.w), own cable (cab), parking (park) and "Kako se puni ovde" (cene.json: kako).
-   The location, the car and the navigation app never leave the browser. docs/RUNBOOK.md 3.18. */
+   The location and the navigation app never leave the browser; the car only goes to the account of a signed-in reader.
+   docs/RUNBOOK.md 3.18. */
 import * as maplibregl from '/assets/vendor/maplibre-6.11.1/maplibre-gl.mjs';
 
 const d = document;
@@ -67,16 +68,18 @@ const ICON = {
   park: svg('<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M10 16V8h3a2.5 2.5 0 0 1 0 5h-3"/>'),
   home: svg('<path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/><path d="M12.8 12.5 11 15.5h2l-1.8 3"/>'),
   bolt: svg('<path d="M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8Z"/>'),
-  list: svg('<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>')
+  list: svg('<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>'),
+  road: svg('<path d="M6 21 9 3M18 21 15 3M12 5v2.5M12 11v2.5M12 17v2.5"/>'),
+  loc: svg('<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>')
 };
-// directions: Apple Maps first on Apple devices (it is the default there), Google Maps first elsewhere, Waze always.
-// The app a reader opens a route in comes first from then on ('bv:nav' in this browser). Google: dir_action=navigate starts
+// directions: Google Maps first everywhere (owner's decision 25.10.2026), Apple Maps second on Apple devices, Waze always.
+// The app a reader opens a route in comes first from then on ('bv:nav2' in this browser; the old 'bv:nav' is ignored: it kept the Apple Maps default of the Apple devices, 25.10.2026). Google: dir_action=navigate starts
 // turn-by-turn at once in the Maps app on a phone; coordinates only, no API key.
 const IS_APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent);
-const NAV_KEY = 'bv:nav', NAV_NAME = { google: 'Google Maps', apple: 'Apple Maps', waze: 'Waze' };
+const NAV_KEY = 'bv:nav2', NAV_NAME = { google: 'Google Maps', apple: 'Apple Maps', waze: 'Waze' };
 let NAV_PREF = '';
 try { NAV_PREF = localStorage.getItem(NAV_KEY) || ''; } catch (e) { NAV_PREF = ''; }
-function navApps() { return IS_APPLE ? ['apple', 'google', 'waze'] : ['google', 'waze']; }
+function navApps() { return IS_APPLE ? ['google', 'apple', 'waze'] : ['google', 'waze']; }
 function navPref() { return navApps().indexOf(NAV_PREF) >= 0 ? NAV_PREF : navApps()[0]; }
 function setNavPref(a) {
   if (navApps().indexOf(a) < 0 || a === NAV_PREF) return;
@@ -121,15 +124,17 @@ try { FAV = new Set((JSON.parse(localStorage.getItem(FAV_KEY) || '[]') || []).fi
 function saveFav() { try { localStorage.setItem(FAV_KEY, JSON.stringify([...FAV])); } catch (e) { /* private mode: kept for this visit only */ } }
 function isFav(s) { return FAV.has(s.id); }
 
-// "Imam Teslu": Tesla-only chargers (the two Superchargers) count as usable and, where drivers report it, free
-const TESLA_KEY = 'bv:tesla';
+// A Tesla in "Moj auto" (or ?tesla=1, for that view only): Tesla-only chargers (the Superchargers) count as usable and,
+// where drivers report it, free. Since 25.10.2026 there is no separate "Imam Teslu" switch: the car decides, as on the
+// Evolako map. The old switch's 'bv:tesla' is removed from this browser.
 let TESLA = false;
-try { TESLA = localStorage.getItem(TESLA_KEY) === '1'; } catch (e) { TESLA = false; }
-function saveTesla() { try { localStorage.setItem(TESLA_KEY, TESLA ? '1' : '0'); } catch (e) { /* private mode: this visit only */ } }
+const TESLA_URL = /[?&]tesla=1\b/.test(location.search);
+try { localStorage.removeItem('bv:tesla'); } catch (e) { /* private mode */ }
+function teslaNow() { const c = carSpec(); return TESLA_URL || !!(c && c.mk === 'Tesla'); }
 
 // "Moj auto": the reader's car in this browser only ('bv:car' = {id, cons, cab, opt}: the car's id in auta.json, the reader's
 // own consumption in kWh/100 km, "I have my own Type 2 cable", the optional on-board charger). With a car the map shows the
-// cost per km; a Tesla also switches "Imam Teslu" on (and another car off).
+// cost per km; a Tesla also makes the Tesla-only chargers usable. A signed-in reader's car is the account's car.
 const CAR_KEY = 'bv:car';
 let CAR = null, CARS = null, CARS_P = null, COSTV = 0;
 try {
@@ -179,9 +184,11 @@ function closedNow(s) { const o = openState(s); return !!o && !o.open; }
 // After the map data is in, /api/nalog/ja is asked once. The browser's list follows its owner ('bv:fav-owner', a short
 // hash the server gives each account): the same account → both lists joined and saved in both; another account → the
 // signed-in account's list replaces it, never mixed; a list from before any sign-in with stations the account does not
-// have → nothing changes here and nothing is sent: /nalog/ asks the reader first. Once in step, every star (and the Tesla
-// switch) is also sent to the account, fire-and-forget: localStorage stays the offline copy. A 401 removes the hint
-// cookie; the map then works as before, locally. The account's fast-charging plug (user.dc) marks the matching connector.
+// have → nothing changes here and nothing is sent: /nalog/ asks the reader first. Once in step, every star (and the car)
+// is also sent to the account, fire-and-forget: localStorage stays the offline copy. The account's car replaces this
+// browser's (a car not on the map's list means no car here); an account without a car takes this browser's, unless the
+// browser was last used by another account. A 401 removes the hint cookie; the map then works as before, locally. The
+// account's fast-charging plug (user.dc) marks the matching connector.
 const OWNER_KEY = 'bv:fav-owner';
 let ACC = false, MYDC = '';
 function accPost(path, body) {
@@ -205,8 +212,14 @@ function accSync() {
     if (!same(next, FAV)) { FAV = next; saveFav(); }
     try { localStorage.setItem(OWNER_KEY, key); } catch (e) { /* private mode */ }
     if (!same(next, acc)) accPost('omiljeni', { replace: [...next] });
-    const tesla = !!(j.user && j.user.tesla);
-    if (tesla !== TESLA && !/[?&]tesla=1\b/.test(location.search)) setTesla(tesla, true);
+    const u = j.user;
+    if (u.car_id || u.car) {
+      const next = u.car_id ? { id: u.car_id, cons: u.car_cons || null, cab: !!u.car_cab, opt: !!u.car_opt } : null;
+      if (JSON.stringify(next) !== JSON.stringify(CAR)) {
+        CAR = next; saveCar();
+        if (CAR) loadCars().then(() => { carChanged(); if (sel) openCard(sel, false); }); else carChanged();
+      }
+    } else if (CAR && (!owner || owner === key)) carToAccount();
     favCount();
     refresh();
     if (sel) openCard(sel, false);
@@ -217,7 +230,7 @@ let ST = [], NETS = {}, CI = {}, CI_STATE = 'loading', map, me = null, sel = nul
 // the neighbouring countries (cfg.region): their links, and how many stations are Serbian (NSR) and how many are not (NRG)
 let RGC = {}, NSR = 0, NRG = 0;
 const state = { q: '', f: 'all', ok: false, cheap: false, bounds: null, lim: 20 };
-let userMove = false;
+let userMove = false, llAt = null;
 const $list = d.getElementById('mlist'), $count = d.getElementById('mcount'), $card = d.getElementById('mcard');
 const $q = d.getElementById('mq'), $chips = d.getElementById('mchips'), $me = d.getElementById('mme');
 
@@ -242,14 +255,14 @@ function kind(s) {
   if (isOff(s)) return 'off';
   if (isFree(s)) return 'free';
   if (teslaOnly(s) && !TESLA) return 'tesla';
-  return (s.dc || 0) > 0 ? 'dc' : 'ac';
+  return (s.dc || 0) > 0 || s.kd === 'dc' ? 'dc' : 'ac';
 }
 // a neighbouring country's station never takes a Serbian network's data (the same slug can mean another company there)
 function netOf(s) { return s.cc ? null : NETS[s.net] || null; }
 function netName(s) { if (s.cc) return s.nn || s.opn || ''; const n = netOf(s); return n ? n.name : (s.opn || ''); }
 // a station without a name is called by its network, else by its street
 function cleanName(n) { return (n || '').replace(/^charge\s*&\s*go\s*[-–:,]?\s*/i, '').replace(/^BS\s+(?=gazprom|nis|evoil)/i, '').trim(); }
-function title(s) { return cleanName(s.n) || netName(s) || (s.a ? s.a.split(',')[0] : T.charger); }
+function title(s) { return cleanName(s.n) || netName(s) || (s.a ? s.a.split(',')[0] : s.vz ? T.vz_title : T.charger); }
 function hayOf(s) { return fold([s.n, s.a].concat(s.al || []).join(' ')); }
 function place(s) {
   const near = s.t ? T.near.replace('{t}', s.t) : '';
@@ -267,6 +280,8 @@ function stationLines(s) {
 }
 function price(s) {
   if (s.cc) return { kind: 'rg' };
+  // a charger added by a driver: what the driver said about the price, never drawn as free (it is not checked yet)
+  if (s.vz) return { kind: 'none', text: s.vz.fee === 'besplatno' ? T.vz_free : s.vz.fee === 'placa' ? T.vz_paid : T.p_unknown };
   const fee = s.fee;
   if (fee && fee.free) {
     const lbl = { label: tr(fee.t), src: tr(fee.src), note: tr(fee.note) };
@@ -530,9 +545,56 @@ function renderList() {
 }
 
 // ---------- card ----------
-function connLine(c) {
-  const [type, cur, kw, n] = c;
-  return (CONN[type] || type) + ' · ' + cur.toUpperCase() + (kw ? ' · ' + fmt(kw, kw % 1 ? 1 : 0) + ' ' + U.kw : '') + (n > 1 ? ' × ' + n : '');
+// the face of each plug, drawn like the other icons (24 px grid, 1.8 stroke, pins as dots): the reader recognises the
+// socket on the charger and on the car without knowing the standard's name (owner, 25.10.2026). The same drawings are in
+// scripts/evomap/evomap.src.js (evolako.rs) — change both.
+const dot = (x, y, r) => '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="currentColor" stroke="none"/>';
+const PLUG = {
+  type2: svg('<path d="M6.52 6h10.96A8.5 8.5 0 1 1 6.52 6Z"/>' + dot(9.6, 8.7, .95) + dot(14.4, 8.7, .95) + dot(7.9, 12.3, 1.25) + dot(12, 12.3, 1.25) + dot(16.1, 12.3, 1.25) + dot(9.9, 16.2, 1.25) + dot(14.1, 16.2, 1.25)),
+  ccs2: svg('<path d="M8.95 3.2h6.1a6.2 6.2 0 1 1-6.1 0Z"/><rect x="5.6" y="16.4" width="12.8" height="5.4" rx="2.7"/>' + dot(10.4, 5.5, .7) + dot(13.6, 5.5, .7) + dot(8.7, 8.7, .95) + dot(12, 8.7, .95) + dot(15.3, 8.7, .95) + dot(10.4, 11.9, .95) + dot(13.6, 11.9, .95) + dot(9, 19.1, 1.3) + dot(15, 19.1, 1.3)),
+  chademo: svg('<circle cx="12" cy="12.5" r="8.5"/><path d="M10.6 4.1v-1.4h2.8v1.4"/><circle cx="8.4" cy="12.7" r="2.1"/><circle cx="15.6" cy="12.7" r="2.1"/>' + dot(12, 8.3, .9) + dot(12, 17, .9)),
+  type1: svg('<circle cx="12" cy="12" r="8.5"/>' + dot(8.7, 10.2, 1.45) + dot(15.3, 10.2, 1.45) + dot(12, 16.2, 1.45) + dot(8.9, 14.7, .8) + dot(15.1, 14.7, .8)),
+  tesla: svg('<path d="M12 3.5c4.4 0 7.5 3 7.5 7.3 0 5-3.6 9.7-7.5 9.7s-7.5-4.7-7.5-9.7C4.5 6.5 7.6 3.5 12 3.5Z"/>' + dot(9.2, 10.8, 1.6) + dot(14.8, 10.8, 1.6) + dot(12, 15.7, 1.2) + dot(10.6, 6.9, .7) + dot(13.4, 6.9, .7)),
+  gbt: svg('<circle cx="12" cy="12" r="8.5"/>' + dot(9.6, 8.4, .95) + dot(14.4, 8.4, .95) + dot(7.8, 12, 1.25) + dot(12, 12, 1.25) + dot(16.2, 12, 1.25) + dot(9.9, 15.9, 1.25) + dot(14.1, 15.9, 1.25)),
+  schuko: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v2.3M12 18.2v2.3"/>' + dot(8.6, 12, 1.35) + dot(15.4, 12, 1.35)),
+  cee: svg('<circle cx="12" cy="12.5" r="8.5"/><path d="M10.8 4.1V2.8h2.4v1.3"/>' + dot(12, 8, 1) + dot(7.6, 11.4, 1) + dot(16.4, 11.4, 1) + dot(9.2, 16.6, 1) + dot(14.8, 16.6, 1) + dot(12, 12.6, 1.2))
+};
+PLUG.ccs1 = PLUG.ccs2;
+// does this plug fit the reader's car („Moj auto“)? 1 yes, 0 no, null = cannot tell (a household socket, CEE).
+// Without a car: the signed-in account's fast-charging plug (MYDC) is marked, nothing is greyed out.
+function plugFit(c, car) {
+  const [type, cur] = c;
+  if (!car) return MYDC && cur === 'dc' && type === MYDC ? 1 : null;
+  if (cur === 'dc') {
+    if (!car.dc) return 0;
+    if (type === 'chademo') return car.pl === 'chademo' ? 1 : 0;
+    if (type === 'ccs2') return car.pl === 'ccs2' ? 1 : 0;
+    if (type === 'tesla') return car.mk === 'Tesla' ? 1 : 0;
+    return 0;
+  }
+  if (type === 'type2') return 1;
+  if (type === 'tesla') return car.mk === 'Tesla' ? 1 : 0;
+  if (type === 'type1' || type === 'gbt') return 0;
+  return null;
+}
+// the connectors as tiles, one per plug and current: "CCS2 · DC · 30–75 kW · ×3" (owner, 26.10.2026); as many in a row as fit
+function connTiles(s) {
+  const g = [], by = {}, car = carSpec();
+  s.c.forEach(c => {
+    const k = c[0] + '|' + c[1];
+    if (!by[k]) g.push(by[k] = { c, lo: null, hi: null, n: 0 });
+    const x = by[k];
+    if (c[2]) { x.lo = x.lo == null ? c[2] : Math.min(x.lo, c[2]); x.hi = x.hi == null ? c[2] : Math.max(x.hi, c[2]); }
+    x.n += c[3] || 1;
+  });
+  const kw = x => x.lo == null ? '' : (x.lo === x.hi ? fmt(x.lo, x.lo % 1 ? 1 : 0) : fmt(x.lo, 0) + '–' + fmt(x.hi, 0)) + ' ' + U.kw;
+  return '<ul class="cns">' + g.map(x => {
+    const [type, cur] = x.c, fit = plugFit(x.c, car);
+    return '<li class="cn' + (cur === 'dc' ? ' dc' : '') + (fit === 0 ? ' no' : fit === 1 ? ' yes' : '') + '"><i aria-hidden="true">' + (PLUG[type] || ICON.cable) + '</i>' +
+      '<b>' + esc(CONN[type] || type) + '</b><small>' + esc([cur.toUpperCase(), kw(x)].filter(Boolean).join(' · ')) + '</small>' +
+      (x.n > 1 ? '<em class="n">×' + x.n + '</em>' : '') +
+      (fit === 1 ? '<em class="fit">' + esc(T.conn_mine) + '</em>' : fit === 0 ? '<em class="fit">' + esc(T.conn_no) + '</em>' : '') + '</li>';
+  }).join('') + '</ul>';
 }
 function estHtml(v, s) {
   const e = perKwh(v, s);
@@ -597,7 +659,7 @@ function promoHtml(s, p) {
   if (s.cc || !cfg.evo || !cfg.home || p.kind === 'free' || p.kind === 'tesla' || isOff(s)) return '';
   const car = carSpec(), hm = car ? homeKm(car) : cfg.home;
   const span = hm.length > 1 ? fmt(Math.min(...hm), 1) + '–' + fmt(Math.max(...hm), 1) : fmt(hm[0], 1);
-  return '<a class="pmini" href="' + esc(evoUrl('kartica')) + '" rel="noopener" data-evo><span class="badge feat">' + esc(T.promo_badge) + '</span>' +
+  return '<a class="pmini solo" href="' + esc(evoUrl('kartica')) + '" rel="noopener" data-evo><span class="badge feat">' + esc(T.promo_badge) + '</span>' +
     '<span>' + fxt(car ? T.promo_km : T.promo_kwh, { h: [hm.length > 1 ? [Math.min(...hm), Math.max(...hm)] : hm[0], span] }) + ' <b>' + esc(T.promo_link) + '</b></span></a>';
 }
 function priceHtml(s) {
@@ -646,7 +708,8 @@ function priceHtml(s) {
     if (p.list.length > 1 || t0.extra) h += '<ul>' + p.list.map(t => '<li><b>' + fxd(t.label) + '</b>' + (t.extra ? ' — ' + fxd(tr(t.extra)) : '') + '</li>').join('') + '</ul>';
     h += '<small>' + esc(T.p_list.replace('{d}', t0.date || '')) + (t0.src ? ' · ' + esc(tr(t0.src)) : '') + '</small>';
   } else if (p.kind === 'seen') {
-    h += '<div>' + esc(T.p_seen) + '</div><ul>' + p.list.slice(0, 3).map(t => '<li><b>' + fxd(t.label) + '</b> — ' + esc(t.charger) + (t.extra ? ', ' + fxd(tr(t.extra)) : '') + '</li>').join('') + '</ul>';
+    // the same line recorded at two places of the network is shown once
+    h += '<div>' + esc(T.p_seen) + '</div><ul>' + [...new Set(p.list.map(t => '<li><b>' + fxd(t.label) + '</b> — ' + esc(t.charger) + (t.extra ? ', ' + fxd(tr(t.extra)) : '') + '</li>'))].slice(0, 3).join('') + '</ul>';
     h += '<small>' + esc(p.note || '') + ' · ' + esc(p.list[0].date) + '</small>';
   } else {
     h += '<div>' + esc(p.text) + '</div>';
@@ -657,21 +720,79 @@ function priceHtml(s) {
   if (stale(pd)) h += '<small class="stale">' + esc(T.p_old) + '</small>';
   const idle = cfg.idle && cfg.idle[(netOf(s) && netOf(s).via) || s.net];
   if (idle && p.kind !== 'free' && p.kind !== 'none') h += '<small>' + esc(T.idle).replace('{x}', fxd(tr(idle))) + '</small>';
-  return h + costHtml(s, p) + promoHtml(s, p) + '</div>';
+  return h + costHtml(s, p) + '</div>';
 }
-// "Kako se puni ovde": the network's steps, payment, without registration, after charging (cene.json: kako) — folded
-function kakoHtml(s) {
-  if (s.cc) return '';
-  const n = netOf(s), k = n && n.kako;
-  if (!k) return '';
-  const row = (lbl, x) => (x ? '<p><b>' + esc(lbl) + '</b> ' + esc(tr(x)) + '</p>' : '');
-  const links = (k.apps || []).map(a => '<a class="lnk" href="' + esc(a.u) + '" target="_blank" rel="noopener nofollow">' + esc(tr(a.l)) + '</a>').join(' · ');
-  const src = (k.src || []).map(a => '<a href="' + esc(a.u) + '" target="_blank" rel="noopener nofollow">' + esc(tr(a.l)) + '</a>').join(' · ');
-  return '<details class="cbox kako"><summary>' + esc(T.kako_t.replace('{n}', n.name)) + '</summary>' +
-    (k.start && k.start.length ? '<ol>' + k.start.map(x => '<li>' + esc(tr(x)) + '</li>').join('') + '</ol>' : '') +
-    row(T.kako_pay, k.pay) + row(T.kako_guest, k.guest) + row(T.kako_after, k.after) + row(T.kako_refund, k.refund) +
-    (links ? '<p class="kako-apps">' + esc(T.kako_apps) + ' ' + links + '</p>' : '') +
-    '<small>' + esc(T.kako_checked.replace('{d}', k.checked || '')) + (src ? ' · ' + src : '') + '</small></details>';
+// "Kako se puni ovde" as a picture (owner, 25.10.2026): 2–4 steps with an icon and a few words, up to three facts, the
+// network's apps; the full text of the network (cene.json: kako) and its sources stay folded under "Detaljno".
+// Every station gets a scheme: its network's (kako.steps), or a general one from what is known about the place
+// (access through staff, a card at the desk, RFID, guests only, free, or an unknown network) — marked „Opšte uputstvo“.
+// The same logic is in scripts/evomap/evomap.src.js (howOf) — change both. ?qa=1: window.bvKakoQa().
+const HI = {
+  app: svg('<rect x="7" y="2.8" width="10" height="18.4" rx="2.4"/><path d="M11 17.6h2"/>'),
+  qr: svg('<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM20 14v1.5M14 20v-1"/>'),
+  plug: svg('<path d="M9 2.8v4M15 2.8v4M6.8 6.8h10.4v3.7a5.2 5.2 0 0 1-10.4 0V6.8Z"/><path d="M12 15.7v5.5"/>'),
+  stop: svg('<circle cx="12" cy="12" r="8.5"/><rect x="9.2" y="9.2" width="5.6" height="5.6" rx="1"/>'),
+  play: svg('<circle cx="12" cy="12" r="8.5"/><path d="M10.4 8.7v6.6l5.2-3.3-5.2-3.3Z"/>'),
+  card: svg('<rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M3 9.8h18M6.8 14.6h3.6"/>'),
+  receipt: svg('<path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21V3Z"/><path d="M9 8h6M9 11.5h6M9 15h3.5"/>'),
+  noacc: svg('<circle cx="10" cy="8" r="3.6"/><path d="M3.5 20a6.5 6.5 0 0 1 10.6-5"/><path d="m16.3 15.3 4.2 4.2M20.5 15.3l-4.2 4.2"/>'),
+  user: svg('<circle cx="12" cy="8" r="3.8"/><path d="M5 20.5a7 7 0 0 1 14 0"/>'),
+  timer: svg('<circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.6v3.9l2.6 1.6M9.6 2.8h4.8"/>'),
+  free: svg('<path d="M3.5 12.4V4.5h7.9l9.1 9.1-7.9 7.9-9.1-9.1Z"/><circle cx="7.9" cy="8.9" r="1.3"/>'),
+  ok: svg('<circle cx="12" cy="12" r="8.5"/><path d="m8.3 12.3 2.5 2.5 5-5.2"/>'),
+  eye: svg('<path d="M2.5 12s3.5-6.3 9.5-6.3 9.5 6.3 9.5 6.3-3.5 6.3-9.5 6.3S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.8"/>'),
+  desk: svg('<path d="M3.5 19.5h17M5.5 16.5a6.5 6.5 0 0 1 13 0Z"/><path d="M12 10V8.2M10.6 8.2h2.8"/>'),
+  rfid: svg('<rect x="3" y="7" width="11" height="10" rx="1.8"/><path d="M17.3 9a4.4 4.4 0 0 1 0 6M19.8 6.8a7.6 7.6 0 0 1 0 10.4"/>'),
+  car: ICON.car, list: ICON.list, cable: ICON.cable, park: ICON.park, info: ICON.info
+};
+function howOf(s) {
+  if (s.cc) return null;
+  const n = netOf(s), k = n && n.kako, ax = s.ax || {}, fee = (s.fee && s.fee.free) || '';
+  const onlyAc = !s.dc && (s.c.length ? s.c.every(c => c[1] === 'ac') : !!s.ac);
+  const acCable = onlyAc && !(s.cab && s.cab.own) ? [['cable', T.hw_g_cable]] : [];
+  if (k && k.steps) {
+    return { k: 'net', name: n.name, steps: k.steps.map(x => [x.i, tr(x.t)]), facts: (k.facts || []).filter(x => !(x.i === 'cable' && s.cab && s.cab.own)).map(x => [x.i, tr(x.t)]), kako: k };
+  }
+  // what the place itself says (dopune.json: ax.how), then who may charge, then free, then nothing known
+  const g = ax.how === 'card-desk' ? 'desk' : ax.how === 'rfid' ? 'rfid' : ax.how === 'staff' ? 'staff'
+    : (ax.who === 'guests' || ax.who === 'customers' || s.acc === 'customers') ? 'guests' : fee ? 'free' : 'unk';
+  const STEPS = {
+    desk: [['desk', T.hw_g_desk], ['rfid', T.hw_g_tap], ['plug', T.hw_g_plug]],
+    rfid: [['rfid', T.hw_g_rfid], ['plug', T.hw_g_plug], ['ok', T.hw_g_start]],
+    staff: [['park', T.hw_g_park], ['user', T.hw_g_staff], ['plug', T.hw_g_plug]],
+    guests: [['desk', T.hw_g_ask], ['park', T.hw_g_park], ['plug', T.hw_g_plug]],
+    free: [['park', T.hw_g_park], ['plug', T.hw_g_plug], ['user', T.hw_g_help]],
+    unk: [['eye', T.hw_g_look], ['qr', T.hw_g_qr], ['plug', T.hw_g_plugstart]]
+  };
+  return { k: g, gen: true, known: !!(n || s.opn), name: n ? n.name : '', steps: STEPS[g], facts: g === 'desk' || g === 'staff' || g === 'rfid' ? [] : acCable, kako: k || null };
+}
+function howHtml(s) {
+  const h = howOf(s);
+  if (!h) return '';
+  const steps = '<ol class="hw-steps" style="--n:' + h.steps.length + '">' + h.steps.map((x, i) => '<li><i aria-hidden="true">' + (HI[x[0]] || HI.info) +
+    '<b>' + (i + 1) + '</b></i><span>' + esc(x[1]) + '</span></li>').join('') + '</ol>';
+  const facts = h.facts.length ? '<ul class="hw-facts">' + h.facts.map(x => '<li>' + (HI[x[0]] || HI.info) + '<span>' + esc(x[1]) + '</span></li>').join('') + '</ul>' : '';
+  const k = h.kako;
+  // the app stores as buttons, this device's store first; the network's websites go under „Detaljno“
+  const all = (k && k.apps) || [], store = a => /apps\.apple\.com|play\.google\.com/.test(a.u);
+  const own = a => (/apps\.apple\.com/.test(a.u) ? IS_APPLE : /Android/.test(navigator.userAgent)) ? 0 : 1;
+  const stores = all.filter(store).sort((a, b) => own(a) - own(b)), sites = all.filter(a => !store(a));
+  const apps = stores.length ? '<p class="hw-apps">' + stores.map(a => '<a href="' + esc(a.u) + '" target="_blank" rel="noopener nofollow">' + HI.app +
+    '<span>' + esc(/apps\.apple\.com/.test(a.u) ? 'App Store' : 'Google Play') + '</span></a>').join('') + '</p>' : '';
+  let more = '';
+  if (k) {
+    const row = (lbl, x) => (x ? '<p><b>' + esc(lbl) + '</b> ' + esc(tr(x)) + '</p>' : '');
+    const src = (k.src || []).map(a => '<a href="' + esc(a.u) + '" target="_blank" rel="noopener nofollow">' + esc(tr(a.l)) + '</a>').join(' · ');
+    more = '<details class="hw-more"><summary>' + esc(T.hw_more) + '</summary>' +
+      (k.start && k.start.length ? '<ol>' + k.start.map(x => '<li>' + esc(tr(x)) + '</li>').join('') + '</ol>' : '') +
+      row(T.kako_pay, k.pay) + row(T.kako_guest, k.guest) + row(T.kako_after, k.after) + row(T.kako_refund, k.refund) +
+      (sites.length ? '<p><b>' + esc(T.hw_sites) + '</b> ' + sites.map(a => '<a href="' + esc(a.u) + '" target="_blank" rel="noopener nofollow">' + esc(tr(a.l)) + '</a>').join(' · ') + '</p>' : '') +
+      '<small>' + esc(T.kako_checked.replace('{d}', k.checked || '')) + (src ? ' · ' + src : '') + '</small></details>';
+  }
+  const fix = cfg.fix ? cfg.fix.replace('{id}', encodeURIComponent(s.id)) : lp('/ispravka/?stanica=') + encodeURIComponent(s.id);
+  const gen = h.gen ? '<p class="hw-gen">' + esc(h.k === 'unk' && !h.known ? T.hw_gen_unk : T.hw_gen) + ' <a href="' + fix + '">' + esc(T.hw_tell) + '</a></p>' : '';
+  return '<section class="cbox hw' + (h.gen ? ' is-gen' : '') + '" aria-label="' + esc(T.hw_t) + '"><div class="hw-h"><span>' + esc(T.hw_t) + '</span>' +
+    (h.gen ? '<em>' + esc(T.hw_general) + '</em>' : h.name ? '<em>' + esc(h.name) + '</em>' : '') + '</div>' + steps + facts + apps + gen + more + '</section>';
 }
 function statusHtml(s) {
   if (!s.ps) return '';
@@ -679,7 +800,7 @@ function statusHtml(s) {
     ' · <b>' + esc(l[2] === 1 ? T.st_ok : T.st_off) + '</b>' + (l[3] && T['st_' + l[3]] ? ' (' + esc(T['st_' + l[3]]) + ')' : '') + '</span></li>').join('');
   return '<div class="cbox"><span>' + esc(T.status) + '</span><ul class="stl">' + li + '</ul><small>' + esc(T.st_src.replace('{d}', s.ps.d)) + '</small></div>';
 }
-const VBY = () => ({ cg: T.v_cg, rm: T.v_rm, te: T.v_te, ps: T.v_ps, g: T.v_g, own: T.v_own });
+const VBY = () => ({ cg: T.v_cg, rm: T.v_rm, te: T.v_te, ps: T.v_ps, g: T.v_g, own: T.v_own, sp: T.v_sp, ye: T.v_ye, bp: T.v_bp, to: T.v_to, mr: T.v_mr });
 // hours and access in one row of badges (dopune.json)
 function tagsHtml(s) {
   const t = [], car = carSpec();
@@ -716,7 +837,7 @@ function plusCode(lat, lon) {
 function pointQ(s) {
   if (s.loc && s.loc.q) return s.loc.q;
   const pre = s.id.split('-')[0];
-  return { cg: 'net', rm: 'net', te: 'net', ps: 'site', osm: 'osm', ocm: 'ocm' }[pre] || '';
+  return { cg: 'net', rm: 'net', te: 'net', ps: 'site', osm: 'osm', ocm: 'ocm', vz: 'vz', ye: 'net', bp: 'net', sp: 'site', own: 'site', tim: 'tim' }[pre] || '';
 }
 function whereHtml(s) {
   const L = s.loc || {}, ll = (+s.lat).toFixed(5) + ', ' + (+s.lon).toFixed(5);
@@ -743,31 +864,36 @@ function verHtml(s) {
     const by = (v.by || []).map(b => VBY()[b]).filter(Boolean).join('; ');
     return '<p class="vf">' + ICON.ok + '<span><b>' + esc(T.v_ok) + '</b> ' + esc(by) + (v.d ? ' · ' + esc(v.d) : '') + vHelp() + '</span></p>';
   }
-  const why = v.s === 'prob' ? T.v_prob : (v.g === 'test' ? T.v_test : v.g === 'g_old' ? T.v_old : T.v_none);
-  return '<div class="vf-warn' + (v.s === 'prob' ? ' no' : '') + '"><b>' + ICON.warn + esc(v.s === 'prob' ? T.v_prob_t : T.v_nep) + '</b><p>' + esc(why) + '</p><small>' + esc(T.v_checked.replace('{d}', v.d || '')) + vHelp() + '</small></div>';
+  const why = v.s === 'prob' ? T.v_prob : (v.g === 'vz' ? T.v_vz : v.g === 'tim' && T.v_tim ? T.v_tim : v.g === 'test' ? T.v_test : v.g === 'g_old' ? T.v_old : T.v_none);
+  const when = (v.g === 'vz' ? T.v_vz_d : v.g === 'tim' && T.v_tim_d ? T.v_tim_d : T.v_checked).replace('{d}', v.d || '');
+  return '<div class="vf-warn' + (v.s === 'prob' ? ' no' : '') + '"><b>' + ICON.warn + esc(v.s === 'prob' ? T.v_prob_t : T.v_nep) + '</b><p>' + esc(why) + '</p><small>' + esc(when) + vHelp() + '</small></div>';
 }
 function openCard(s, fly, fromNear) {
   sel = s;
   opened = Date.now();
   nearOpen = false;
-  cardNear = !!(fromNear && NEAR);
+  // from = true: opened from "Najbliži punjač"; 'rt': from "Punjači na putu" (or tapped on the map while the route was open)
+  cardRt = !!RT.route && (fromNear === 'rt' || (fromNear !== true && (rtOpen || RT.min || (cardRt && RT.shown))));
+  rtOpen = false; RT.min = false;
+  cardNear = !cardRt && !!(fromNear && NEAR);
+  if (!cardRt && RT.shown) rtClear();
   const n = netOf(s);
   const logo = n && n.logo ? '<span class="lg w' + (n.logo_dark ? ' dark' : '') + '"><img src="' + esc(n.logo) + '" alt=""></span>' : '<span class="lg w mono" aria-hidden="true">' + esc((netName(s) || '?').slice(0, 2).toUpperCase()) + '</span>';
   const netRole = s.cc ? (s.nn ? T.net_known : T.operator) : n && n.page ? T.net_known : (s.opn && !n ? T.operator : T.net_unknown);
   const netLine = netName(s) ? '<div class="net">' + logo + '<div><b>' + esc(netName(s)) + '</b><span>' + esc(netRole) + '</span></div></div>' : '';
-  const conns = s.c.length ? '<div class="cbox"><span>' + esc(T.conn) + '</span><ul>' + s.c.map(c => '<li>' + esc(connLine(c)) +
-    (MYDC && c[0] === MYDC ? ' <b class="mine">· ' + esc(T.conn_mine) + '</b>' : '') + '</li>').join('') + '</ul></div>' : '';
+  const conns = s.c.length ? '<div class="cbox cbx-cn"><span>' + esc(T.conn) + '</span>' + connTiles(s) + '</div>' : '';
   const acc = s.acc === 'customers' ? '<div class="cbox"><span>' + esc(T.access) + '</span><div>' + esc(T.customers) + '</div></div>' : '';
   const navs = navLinks(s);
   // a neighbouring country's station: the button opens it on that country's map on blokvolt.com (prices, the country's networks)
   const rg = s.cc && RGC[s.cc];
   const site = rg ? rg.map + '#' + encodeURIComponent(s.id) : n && n.page ? n.page : (n && n.site ? n.site : '');
   const fix = cfg.fix ? cfg.fix.replace('{id}', encodeURIComponent(s.id)) : lp('/ispravka/?stanica=') + encodeURIComponent(s.id);
-  const SRC = { ocm: 'Open Charge Map', osm: 'OpenStreetMap', ps: 'JP Putevi Srbije', cg: 'Charge&GO', rm: T.src_rm, te: 'Tesla', cga: T.src_cga };
-  const srcs = s.src.filter(x => x.u).map(x => '<a href="' + esc(x.u) + '" rel="noopener nofollow">' + esc(tr(x.l) || SRC[x.d] || x.d) + '</a>' + (x.upd ? ' (' + esc(x.upd) + ')' : '')).join(' · ');
+  const SRC = { ocm: 'Open Charge Map', osm: 'OpenStreetMap', ps: 'JP Putevi Srbije', cg: 'Charge&GO', rm: T.src_rm, te: 'Tesla', cga: T.src_cga, vz: T.src_vz,
+    sp: T.src_sp, ye: T.src_ye, bp: 'Best in Parking', own: T.src_own, tim: T.src_tim };
+  const srcs = s.src.filter(x => x.u).map(x => '<a href="' + esc(lp(x.u)) + '" rel="noopener nofollow">' + esc(tr(x.l) || SRC[x.d] || x.d) + '</a>' + (x.upd ? ' (' + esc(x.upd) + ')' : '')).join(' · ');
   $card.innerHTML = '<div class="ccard" role="dialog" aria-label="' + esc(title(s)) + '"><button class="x" type="button" aria-label="' + esc(T.close) + '">' + ICON.x + '</button>' +
-    favBtn(s) + (cardNear ? '<button class="lnkbtn nr-back" type="button" data-nr="back">← ' + esc(T.nr_title) + '</button>' : '') +
-    '<h2>' + esc(title(s)) + '</h2><p class="addr">' + esc(place(s)) + '</p>' + verHtml(s) + tagsHtml(s) + netLine + priceHtml(s) + noteHtml(s) + kakoHtml(s) + statusHtml(s) + conns + acc + whereHtml(s) +
+    favBtn(s) + (cardNear ? '<button class="lnkbtn nr-back" type="button" data-nr="back">← ' + esc(T.nr_title) + '</button>' : cardRt ? '<button class="lnkbtn nr-back" type="button" data-rt="back">← ' + esc(T.rt_title) + '</button>' : '') +
+    '<h2>' + esc(title(s)) + '</h2><p class="addr">' + esc(place(s)) + '</p>' + verHtml(s) + tagsHtml(s) + netLine + conns + priceHtml(s) + noteHtml(s) + howHtml(s) + promoHtml(s, price(s)) + statusHtml(s) + acc + whereHtml(s) +
     '<div class="acts"><a class="btn dark full" href="' + navs[0][1] + '" target="_blank" rel="noopener" data-nav="' + navs[0][2] + '">' + ICON.nav + esc(T.navigate) + '</a>' +
     '<p class="nav-alt">' + esc(T.nav_in) + ' ' + navs.slice(1).map(x => '<a class="lnk" href="' + x[1] + '" target="_blank" rel="noopener" data-nav="' + x[2] + '">' + x[0] + '</a>').join(' · ') + '</p>' +
     (site ? '<a class="btn' + (rg ? ' full' : '') + '" href="' + esc(site) + '"' + (site[0] === '/' ? '' : ' target="_blank" rel="noopener"') + '>' + ICON.ext + esc(rg ? T.rg_open : n && n.page ? T.about_net : T.site) + '</a>' : '') +
@@ -784,7 +910,7 @@ function openCard(s, fly, fromNear) {
     if (e.target.closest('[data-share]')) { shareStation(s); return; }
     const a = e.target.closest('a');
     if (!a) return;
-    if (a.dataset.nav) { setNavPref(a.dataset.nav); track('map_navigate', { station: s.id, network: s.net || '', app: a.dataset.nav, from: cardNear ? 'nearest' : 'card' }); }
+    if (a.dataset.nav) { setNavPref(a.dataset.nav); track('map_navigate', { station: s.id, network: s.net || '', app: a.dataset.nav, from: cardNear ? 'nearest' : cardRt ? 'route' : 'card' }); }
     else track(s.cc ? 'map_region_link' : a.href.indexOf('/ispravka/') >= 0 || a.href.indexOf('mailto:') === 0 ? 'map_report_error' : 'map_network_link', { station: s.id, network: s.net || '' });
   });
   rvBind(s);
@@ -832,7 +958,9 @@ function toggleFav(s) {
 }
 function closeCard() {
   if (nearOpen && !sel) { closeNear(); return; }
-  cardNear = false;
+  if (rtOpen && !sel) { rtClose(); return; }
+  if (cardRt) rtClear();
+  cardNear = false; cardRt = false;
   sel = null;
   $card.classList.remove('is-open');
   $card.innerHTML = '';
@@ -846,7 +974,7 @@ function padding() {
 
 // ---------- "Najbliži punjač": the three nearest chargers a driver can use, and a route in a navigation app ----------
 // The same rules as the Evolako and BlokVolt apps and evolako.rs/mapa-punjaca: the chip filter counts, the search text and the
-// visible part of the map do not; never a charger that does not work, is only for Tesla vehicles (unless "Imam Teslu"), is
+// visible part of the map do not; never a charger that does not work, is only for Tesla vehicles (unless "Moj auto" is a Tesla), is
 // closed now, or that the reader's car cannot use (its DC plug; a Type 2 socket without a cable when the reader has none);
 // only confirmed ones unless the reader asks for the rest (or none is confirmed); with "Potvrđeni" on, confirmed only.
 // Order: the straight-line distance, then DC ≥ 50 kW, then the name — no network or firm is ever put first.
@@ -919,7 +1047,8 @@ function nearPanel(o, fit) {
   const was = nearOpen || !!sel;
   if (sel) { sel = null; history.replaceState(null, '', location.pathname + location.search); renderList(); }
   nearOpen = true;
-  cardNear = false;
+  cardNear = false; cardRt = false; rtOpen = false;
+  if (RT.shown) rtClear();
   let body;
   if (o.wait) body = '<p class="nr-wait" role="status"><span class="nr-spin" aria-hidden="true"></span>' + esc(T.nr_wait) + '</p>';
   else if (o.ask) body = '<p class="nr-msg">' + esc(T.nr_ask) + '</p><button class="btn dark nr-cta" type="button" data-nr="go">' + ICON.nav + '<span>' + esc(T.nr_find) + '</span></button>';
@@ -1004,6 +1133,328 @@ function nearClick(t) {
   }
   return true;
 }
+
+// ---------- "Punjači na putu": fast chargers along a route the reader enters (owner's decision 24.10.2026) ----------
+// The reader types where to (and where from; empty = the reader's location). The places are looked up in Photon
+// (photon.komoot.io, OpenStreetMap data) and the route in OSRM on the FOSSGIS server (routing.openstreetmap.de): the
+// browser sends them only the typed text and the two points; the site gets and stores nothing (RUNBOOK 3.18).
+// Chargers: DC ≥ 50 kW that work (never "Ne radi"), not only for Tesla (unless "Moj auto" is a Tesla), usable by the reader's car
+// when one is chosen; within R km of the route (straight line), ordered by the distance along the route. Confirmed only,
+// unless the reader asks for the rest (or none is confirmed); with "Potvrđeni" on, confirmed only. The chip filter and
+// the search text do not count: the route has its own rule. No network or firm is ever put first.
+const RT_GEO = 'https://photon.komoot.io/api/', RT_OSRM = 'https://routing.openstreetmap.de/routed-car/route/v1/driving/';
+const RT_RS = [2, 5, 10], RT_MAXR = 10;
+let RT = { r: 5, nep: false, from: null, to: null }, rtOpen = false, cardRt = false;
+const $rtBtn = d.getElementById('mroute');
+// Serbian Cyrillic place names from OpenStreetMap are shown in Latin script on the Serbian and English pages
+const LATN = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', ђ: 'đ', ѓ: 'gj', е: 'e', ж: 'ž', з: 'z', ѕ: 'dz', и: 'i', ј: 'j', к: 'k', ќ: 'kj',
+  л: 'l', љ: 'lj', м: 'm', н: 'n', њ: 'nj', о: 'o', п: 'p', р: 'r', с: 's', т: 't', ћ: 'ć', у: 'u', ф: 'f', х: 'h', ц: 'c', ч: 'č', џ: 'dž', ш: 'š' };
+const latn = x => (LANG === 'ru' ? String(x || '') : String(x || '').replace(/[Ѐ-ӿ]/g, c => {
+  const l = c.toLowerCase(), t = LATN[l];
+  return t == null ? c : c === l ? t : t.charAt(0).toUpperCase() + t.slice(1);
+}));
+function geoLabel(f) {
+  const a = f.properties || {}, out = [];
+  const street = a.street ? a.street + (a.housenumber ? ' ' + a.housenumber : '') : '';
+  [a.name, street, a.city || a.town || a.village || a.district, a.country].forEach(x => {
+    const v = latn(x).trim();
+    if (v && out.indexOf(v) < 0) out.push(v);
+  });
+  return out.join(', ');
+}
+let geoCtl = null;
+// own = a lookup the reader cannot cancel by typing on (the search on submit); suggestions cancel each other
+async function geoSearch(q, own) {
+  let sig;
+  if (!own) { if (geoCtl) geoCtl.abort(); geoCtl = new AbortController(); sig = geoCtl.signal; }
+  const u = RT_GEO + '?q=' + encodeURIComponent(q) + '&limit=6&lang=' + (LANG === 'ru' ? 'default' : 'en') + '&lat=' + C0[1] + '&lon=' + C0[0];
+  const r = await fetch(u, { signal: sig, credentials: 'omit' });
+  if (!r.ok) throw Object.assign(new Error('geo ' + r.status), { code: 'net' });
+  const j = await r.json(), seen = new Set();
+  return (j.features || []).filter(f => f.geometry && f.geometry.coordinates).map(f => ({
+    label: geoLabel(f), pt: { lon: +f.geometry.coordinates[0], lat: +f.geometry.coordinates[1] }
+  })).filter(x => x.label && !seen.has(x.label) && seen.add(x.label)).slice(0, 5);
+}
+async function rtResolve(q) {
+  const r = await geoSearch(q, true);
+  if (!r.length) throw Object.assign(new Error('nf'), { code: 'nf', q });
+  return r[0];
+}
+function rtMe() {
+  return new Promise((ok, no) => {
+    if (!navigator.geolocation) { no(Object.assign(new Error('unavail'), { code: 'unavail' })); return; }
+    navigator.geolocation.getCurrentPosition(p => ok({ label: '', pt: { lat: p.coords.latitude, lon: p.coords.longitude } }),
+      e => no(Object.assign(new Error('geo'), { code: e && e.code === 1 ? 'denied' : 'unavail' })),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 120000 });
+  });
+}
+async function rtFetch(a, b) {
+  const ll = p => p.lon.toFixed(5) + ',' + p.lat.toFixed(5);
+  let r;
+  try { r = await fetch(RT_OSRM + ll(a) + ';' + ll(b) + '?overview=full&geometries=geojson&alternatives=false&steps=false', { credentials: 'omit' }); }
+  catch (e) { throw Object.assign(new Error('net'), { code: 'net' }); }
+  const j = r.ok || r.status === 400 ? await r.json().catch(() => null) : null;
+  if (!j) throw Object.assign(new Error('route ' + r.status), { code: 'net' });
+  if (j.code !== 'Ok' || !j.routes || !j.routes.length) throw Object.assign(new Error(j.code || 'noroute'), { code: 'noroute' });
+  const x = j.routes[0];
+  return { km: x.distance / 1000, min: x.duration / 60, line: x.geometry.coordinates };
+}
+// the route on a flat plane in km (good to a few per cent across the region); points closer than 150 m to the last
+// kept one are skipped. a = the distance along the route, scaled to the router's own length.
+function rtGeom(R) {
+  const L = R.line, lat0 = L[Math.floor(L.length / 2)][1] * Math.PI / 180, kx = 111.32 * Math.cos(lat0), ky = 110.57;
+  const P = [], bb = [Infinity, Infinity, -Infinity, -Infinity];
+  let acc = 0, prev = null;
+  L.forEach((c, i) => {
+    const p = { x: c[0] * kx, y: c[1] * ky };
+    if (prev) {
+      const dd = Math.hypot(p.x - prev.x, p.y - prev.y);
+      if (dd < 0.15 && i < L.length - 1) return;
+      acc += dd;
+    }
+    p.a = acc; P.push(p); prev = p;
+    bb[0] = Math.min(bb[0], p.x); bb[1] = Math.min(bb[1], p.y); bb[2] = Math.max(bb[2], p.x); bb[3] = Math.max(bb[3], p.y);
+  });
+  const k = acc > 0 ? R.km / acc : 1;
+  return { P, kx, ky, bb, k };
+}
+function rtDist(G, s) {
+  const x = s.lon * G.kx, y = s.lat * G.ky;
+  if (x < G.bb[0] - RT_MAXR || x > G.bb[2] + RT_MAXR || y < G.bb[1] - RT_MAXR || y > G.bb[3] + RT_MAXR) return null;
+  const P = G.P;
+  let best = Infinity, at = 0;
+  if (P.length === 1) best = (x - P[0].x) ** 2 + (y - P[0].y) ** 2;
+  for (let i = 1; i < P.length; i++) {
+    const a = P[i - 1], b = P[i], dx = b.x - a.x, dy = b.y - a.y, l2 = dx * dx + dy * dy;
+    let t = l2 ? ((x - a.x) * dx + (y - a.y) * dy) / l2 : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const qx = a.x + t * dx - x, qy = a.y + t * dy - y, dd = qx * qx + qy * qy;
+    if (dd < best) { best = dd; at = a.a + t * Math.sqrt(l2); }
+  }
+  const dk = Math.sqrt(best);
+  return dk <= RT_MAXR ? { d: dk, at: at * G.k } : null;
+}
+function rtUsable(s) {
+  if ((s.dc || 0) < 50 || isOff(s) || (teslaOnly(s) && !TESLA) || !isFinite(s.lat) || !isFinite(s.lon)) return false;
+  const car = carSpec();
+  return !car || dcUsable(s, car);
+}
+function rtList() {
+  const all = (RT.cand || []).filter(x => x.d <= RT.r && rtUsable(x.s)).sort((a, b) => a.at - b.at || a.d - b.d);
+  const ok = all.filter(x => ver(x.s) === 'ok');
+  const every = !state.ok && (RT.nep || !ok.length);
+  const rows = every ? all : ok;
+  return { rows, every, more: !every && !state.ok ? all.length - ok.length : 0 };
+}
+function rtDur(min) {
+  const m = Math.max(1, Math.round(min / 5) * 5), h = Math.floor(m / 60), r = m % 60;
+  return h ? T.rt_h.replace('{h}', h).replace('{m}', r) : T.rt_m.replace('{m}', m);
+}
+// the longest stretch without a fast charger: start → first, between two, last → destination
+function rtGap(rows) {
+  if (!RT.route) return 0;
+  let last = 0, g = 0;
+  rows.forEach(x => { g = Math.max(g, x.at - last); last = x.at; });
+  return Math.max(g, RT.route.km - last);
+}
+function rtRow(x) {
+  const s = x.s, k = kind(s), pw = power(s), ps = priceShort(s), a = navPref(), tags = [];
+  if (ver(s) !== 'ok') tags.push('<span class="tag warn">' + ICON.warn + esc(ver(s) === 'src' ? T.v_src_short : T.v_nep) + '</span>');
+  if (closedNow(s)) tags.push('<span class="tag">' + ICON.clock + esc(T.closed_now) + '</span>');
+  if (s.ax && s.ax.t) tags.push('<span class="tag">' + esc(tr(s.ax.t)) + '</span>');
+  else if (s.acc === 'customers') tags.push('<span class="tag">' + esc(T.customers) + '</span>');
+  const off = x.d < 0.3 ? T.rt_on : T.rt_off.replace('{d}', fmtDist(x.d));
+  return '<li class="nr rt-row">' +
+    '<button class="nr-main" type="button" data-rt-open="' + esc(s.id) + '"><span class="dot ' + k + (ver(s) === 'nep' ? ' nep' : '') + '">' + (pw ? Math.round(pw) : '') + '</span>' +
+    '<span class="nr-nm"><b>' + esc(title(s)) + '</b><span class="nr-sb">' + esc([netName(s), place(s)].filter(Boolean).join(' · ')) + '</span>' +
+    '<span class="nr-meta"><b>' + esc(T.rt_at.replace('{km}', fmt(x.at, 0))) + '</b> · ' + esc(off) + (ps.t ? ' · <span class="nr-pr">' + esc(ps.t) + '</span>' : '') + '</span></span></button>' +
+    '<a class="btn sm nr-go" href="' + esc(navUrl(a, s)) + '" target="_blank" rel="noopener" data-nav="' + a + '" data-st="' + esc(s.id) + '" aria-label="' +
+    esc(T.nr_nav_to.replace('{t}', title(s)).replace('{d}', fmt(x.at, 0) + ' ' + U.km)) + '">' + ICON.nav + '<span>' + esc(T.navigate) + '</span></a>' +
+    (tags.length ? '<div class="tags nr-tags">' + tags.slice(0, 2).join('') + '</div>' : '') + '</li>';
+}
+const FC0 = { type: 'FeatureCollection', features: [] };
+function rtDraw(rows) {
+  if (!map || !map.getSource('rt')) return;
+  const R = RT.route;
+  map.getSource('rt').setData(R ? { type: 'Feature', geometry: { type: 'LineString', coordinates: R.line }, properties: {} } : FC0);
+  map.getSource('rte').setData(R ? { type: 'FeatureCollection', features: [
+    { type: 'Feature', geometry: { type: 'Point', coordinates: R.line[0] }, properties: { e: 'a' } },
+    { type: 'Feature', geometry: { type: 'Point', coordinates: R.line[R.line.length - 1] }, properties: { e: 'b' } }] } : FC0);
+  map.getSource('rts').setData(R && rows ? { type: 'FeatureCollection', features: rows.map(x => feat(x.s)) } : FC0);
+}
+function rtClear() { RT.shown = false; RT.min = false; if (map && map.getSource('rt')) { map.getSource('rt').setData(FC0); map.getSource('rte').setData(FC0); map.getSource('rts').setData(FC0); } }
+function rtFit() {
+  if (!map || !RT.route) return;
+  const b = new maplibregl.LngLatBounds(RT.route.line[0], RT.route.line[0]);
+  RT.route.line.forEach(c => b.extend(c));
+  const pad = window.innerWidth > 900 ? { top: 60, bottom: 60, left: 50, right: 420 } : { top: 50, bottom: 100, left: 30, right: 30 };
+  map.fitBounds(b, { padding: pad, maxZoom: 13, duration: 900 });
+}
+function rtBtnPaint() {
+  if (!$rtBtn) return;
+  const v = $rtBtn.querySelector('[data-rtlbl]'), on = !!(RT.route && RT.to);
+  $rtBtn.classList.toggle('is-set', on);
+  if (v) v.textContent = on ? T.rt_btn_set.replace('{t}', RT.to.label.split(',')[0]).replace('{n}', rtList().rows.length) : T.rt_btn_sub;
+}
+const RT_ERR = { nf: 'rt_nf', denied: 'rt_denied', unavail: 'rt_unavail', noroute: 'rt_noroute', same: 'rt_same', need: 'rt_need', net: 'rt_err' };
+function rtBody(fit) {
+  const box = $card.querySelector('.rt-res');
+  if (!box) return;
+  let h = '';
+  if (RT.wait) h = '<p class="nr-wait" role="status"><span class="nr-spin" aria-hidden="true"></span>' + esc(T.rt_wait) + '</p>';
+  else if (RT.err) h = '<p class="nr-msg" role="alert">' + esc((T[RT_ERR[RT.err] || 'rt_err'] || '').replace('{q}', RT.errq || '')) + '</p>';
+  else if (RT.route) {
+    const r = rtList(), R = RT.route, car = carSpec(), a = navPref(), gap = rtGap(r.rows);
+    const out = R.line.some(c => c[0] < 13 || c[0] > 23.6 || c[1] < 39.5 || c[1] > 46.6);
+    h = '<p class="rt-sum"><b>' + esc(fmt(R.km, 0) + ' ' + U.km) + '</b> · ' + esc(rtDur(R.min)) + '</p>' +
+      '<p class="addr">' + esc((r.every ? T.rt_sub_all : T.rt_sub).replace('{r}', RT.r)) + (car ? ' ' + esc(T.rt_car.replace('{car}', carName(car))) : '') + '</p>' +
+      '<button class="btn rt-mapbtn" type="button" data-rt="map">' + ICON.road + '<span>' + esc(T.rt_map) + '</span></button>' +
+      '<div class="nr-chips rt-chips" role="group" aria-label="' + esc(T.rt_r_l) + '">' + RT_RS.map(x => '<button class="chip" type="button" data-rt-r="' + x + '" aria-pressed="' + (x === RT.r) + '">' + esc(T.rt_r.replace('{r}', x)) + '</button>').join('') + '</div>' +
+      (r.rows.length ? '<ol class="nrl rtl">' + r.rows.map(rtRow).join('') + '</ol>' : '<p class="nr-msg">' + esc(T.rt_none.replace('{r}', RT.r)) + '</p>') +
+      (r.more ? '<p class="nr-more"><button class="lnkbtn" type="button" data-rt="nep">' + esc(T.rt_nep.replace('{n}', r.more)) + '</button></p>' : '') +
+      (gap >= 100 ? '<p class="nr-msg rt-gap">' + ICON.warn + '<span>' + esc(T.rt_gap.replace('{x}', fmt(gap, 0) + ' ' + U.km)) + '</span></p>' : '') +
+      (out ? '<p class="nr-msg">' + esc(T.rt_area) + '</p>' : '') +
+      '<a class="btn rt-dest" href="' + esc(navUrl(a, RT.to.pt)) + '" target="_blank" rel="noopener" data-nav="' + a + '" data-st="">' + ICON.nav + '<span>' + esc(T.rt_dest) + '</span></a>';
+    rtDraw(r.rows);
+    RT.shown = true;
+    if (fit) rtFit();
+  }
+  box.innerHTML = h + '<p class="nr-note">' + esc(T.rt_privacy) + '</p>' +
+    '<p class="nr-note rt-attr">' + esc(T.rt_attr) + ' · <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">' + esc(T.rt_fix) + '</a></p>';
+  fxCard();
+  rtBtnPaint();
+}
+function rtField(id, lab, ph, val) {
+  return '<div class="rt-f"><label for="' + id + '">' + esc(lab) + '</label><div class="rt-in"><input class="input" id="' + id + '" type="text" autocomplete="off" spellcheck="false" enterkeyhint="search" placeholder="' + esc(ph) + '" value="' + esc(val) + '"' +
+    ' role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + id + '-l">' +
+    (id === 'rt-from' ? '<button class="rt-loc" type="button" data-rt="me" title="' + esc(T.rt_me) + '" aria-label="' + esc(T.rt_me) + '">' + ICON.loc + '</button>' : '') +
+    '</div><ul class="rt-sug" id="' + id + '-l" role="listbox" hidden></ul></div>';
+}
+function rtPanel(source) {
+  if (sel) { sel = null; history.replaceState(null, '', location.pathname + location.search); renderList(); }
+  nearOpen = false; cardNear = false; cardRt = false; rtOpen = true; RT.min = false;
+  carOpen = false;
+  if (map && map.getSource('sel')) map.getSource('sel').setData(FC0);
+  $card.innerHTML = '<div class="ccard rtp" role="dialog" aria-label="' + esc(T.rt_title) + '"><button class="x" type="button" aria-label="' + esc(T.close) + '">' + ICON.x + '</button>' +
+    '<h2>' + esc(T.rt_title) + '</h2><p class="addr">' + esc(T.rt_lead) + '</p>' +
+    '<form class="rt-form" novalidate>' + rtField('rt-from', T.rt_from, T.rt_me, RT.from ? RT.from.label : '') + rtField('rt-to', T.rt_to, T.rt_to_ph, RT.to ? RT.to.label : '') +
+    '<button class="btn dark rt-go" type="submit">' + ICON.road + '<span>' + esc(T.rt_go) + '</span></button></form><div class="rt-res" aria-live="polite"></div></div>';
+  $card.classList.add('is-open');
+  rtBody(!!RT.route);
+  const f = $card.querySelector(RT.to ? '.x' : '#rt-to');
+  if (f && (window.innerWidth > 900 || RT.to)) f.focus({ preventScroll: true });
+  if (source) track('map_route_open', { source });
+}
+function rtClose() {
+  rtOpen = false;
+  RT.job = null;
+  $card.classList.remove('is-open');
+  $card.innerHTML = '';
+  rtClear();
+  if ($rtBtn && window.innerWidth > 900) $rtBtn.focus({ preventScroll: true });
+}
+async function rtRun() {
+  const fin = $card.querySelector('#rt-from'), tin = $card.querySelector('#rt-to');
+  if (!fin || !tin) return;
+  rtSugHide();
+  const fq = fin.value.trim(), tq = tin.value.trim();
+  const job = RT.job = {};
+  RT.err = ''; RT.errq = '';
+  if (!tq) { RT.route = null; RT.err = 'need'; rtClear(); rtBody(); tin.focus(); return; }
+  RT.wait = true; rtBody();
+  try {
+    const to = RT.to && RT.to.pt && RT.to.label === tq ? RT.to : await rtResolve(tq);
+    const from = !fq ? await rtMe() : RT.from && RT.from.pt && RT.from.label === fq ? RT.from : await rtResolve(fq);
+    if (RT.job !== job) return;
+    if (distKm(from.pt, to.pt) < 0.3) throw Object.assign(new Error('same'), { code: 'same' });
+    const R = await rtFetch(from.pt, to.pt);
+    if (RT.job !== job) return;
+    const G = rtGeom(R), cand = [];
+    ST.forEach(s => { if ((s.dc || 0) >= 50) { const x = rtDist(G, s); if (x) cand.push({ s, d: x.d, at: x.at }); } });
+    RT.from = fq ? from : null; RT.to = to; RT.route = R; RT.cand = cand; RT.nep = false; RT.wait = false;
+    if (!fq) { me = from.pt; showMe(); }
+    if (tin.value.trim() === tq) tin.value = to.label;
+    if (fq && fin.value.trim() === fq) fin.value = from.label;
+    rtBody(true);
+    track('map_route', { ok: true, km: Math.round(R.km), rows: rtList().rows.length, radius: RT.r, from_me: !fq, car: !!CAR, confirmed_only: state.ok });
+  } catch (e) {
+    if (RT.job !== job) return;
+    RT.wait = false; RT.route = null; RT.err = e.code || 'net'; RT.errq = e.q || '';
+    rtClear(); rtBody();
+    track('map_route', { ok: false, error: RT.err });
+  }
+}
+// address suggestions under the field being typed in (Photon), after a short pause
+let rtT = 0;
+function rtSugHide() {
+  $card.querySelectorAll('.rt-sug').forEach(u => { u.hidden = true; u.innerHTML = ''; });
+  $card.querySelectorAll('.rt-in input').forEach(i => i.setAttribute('aria-expanded', 'false'));
+}
+function rtSug(inp) {
+  clearTimeout(rtT);
+  const key = inp.id === 'rt-from' ? 'from' : 'to', q = inp.value.trim(), ul = d.getElementById(inp.id + '-l');
+  if (RT[key] && RT[key].label !== inp.value.trim()) RT[key] = null;
+  if (q.length < 3 || !ul) { if (ul) { ul.hidden = true; ul.innerHTML = ''; } return; }
+  rtT = setTimeout(() => {
+    geoSearch(q).then(list => {
+      if (!inp.isConnected || inp.value.trim() !== q || d.activeElement !== inp) return;
+      RT.sug = list;
+      ul.innerHTML = list.map((x, i) => '<li role="option"><button type="button" data-sug="' + i + '" data-for="' + key + '">' + ICON.pin + '<span>' + esc(x.label) + '</span></button></li>').join('');
+      ul.hidden = !list.length;
+      inp.setAttribute('aria-expanded', String(!!list.length));
+    }, () => {});
+  }, 300);
+}
+function rtClick(t) {
+  if (!rtOpen) {
+    if (sel && cardRt && t.closest('[data-rt="back"]')) { rtPanel(); return true; }
+    return false;
+  }
+  const sg = t.closest('[data-sug]');
+  if (sg) {
+    const x = RT.sug && RT.sug[+sg.dataset.sug];
+    if (x) {
+      RT[sg.dataset.for] = x;
+      const inp = $card.querySelector(sg.dataset.for === 'from' ? '#rt-from' : '#rt-to');
+      if (inp) inp.value = x.label;
+      rtSugHide();
+      if (sg.dataset.for === 'to' || $card.querySelector('#rt-to').value.trim()) rtRun();
+      else { const ti = $card.querySelector('#rt-to'); if (ti) ti.focus(); }
+    }
+    return true;
+  }
+  const op = t.closest('[data-rt-open]');
+  if (op) { const s = ST.find(x => x.id === op.dataset.rtOpen); if (s) openCard(s, true, 'rt'); return true; }
+  const rr = t.closest('[data-rt-r]');
+  if (rr) { RT.r = +rr.dataset.rtR; rtBody(false); track('map_route_radius', { radius: RT.r }); return true; }
+  const b = t.closest('[data-rt]');
+  if (!b) { if (!t.closest('.rt-f')) rtSugHide(); return false; }
+  const k = b.dataset.rt;
+  if (k === 'nep') { RT.nep = true; rtBody(false); }
+  else if (k === 'map') {
+    // phone: the sheet covers the map — hide it and keep the route; a tap on a charger opens its card with "← back"
+    rtOpen = false; RT.min = true;
+    $card.classList.remove('is-open'); $card.innerHTML = '';
+    const w = d.querySelector('.map-wrap'); if (w) w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    rtFit();
+  }
+  else if (k === 'me') { const fi = $card.querySelector('#rt-from'); if (fi) { fi.value = ''; RT.from = null; } if ($card.querySelector('#rt-to').value.trim()) rtRun(); else $card.querySelector('#rt-to').focus(); }
+  return true;
+}
+if ($rtBtn) $rtBtn.addEventListener('click', () => (rtOpen ? rtClose() : rtPanel('button')));
+$card.addEventListener('submit', e => { if (e.target.closest('.rt-form')) { e.preventDefault(); rtRun(); } });
+$card.addEventListener('input', e => { if (e.target.closest('.rt-in')) rtSug(e.target); });
+$card.addEventListener('keydown', e => {
+  const t = e.target;
+  if (e.key === 'Escape' && t.closest('.rt-f') && $card.querySelector('.rt-sug:not([hidden])')) { rtSugHide(); e.stopPropagation(); return; }
+  if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && t.closest('.rt-f')) {
+    const box = t.closest('.rt-f'), bs = [...box.querySelectorAll('.rt-sug button')];
+    if (!bs.length) return;
+    e.preventDefault();
+    const i = bs.indexOf(t), n = e.key === 'ArrowDown' ? i + 1 : i - 1;
+    if (n < 0) box.querySelector('input').focus(); else bs[Math.min(n, bs.length - 1)].focus();
+  }
+});
 
 // ---------- drivers' reports, ratings and photos (/api, stored in Cloudflare D1) ----------
 function ago(t) {
@@ -1308,7 +1759,7 @@ function feat(s) {
   return { type: 'Feature', id: s._i, geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
     properties: { id: s.id, k, v: closedNow(s) && v !== 'nep' ? 'cl' : v, p: v === 'nep' && k !== 'tesla' ? p + '?' : p, f: FAV.has(s.id) ? 1 : 0, pl: fxPin(pp.t), pc: pp.c } };
 }
-// Serbia and the neighbouring countries are two sources: the neighbours are drawn quieter and cluster on their own
+// Serbia and the neighbouring countries are two sources: the neighbours are drawn quieter, under Serbia's chargers
 function data(rg) { return { type: 'FeatureCollection', features: visible().filter(s => !s.cc === !rg).map(feat) }; }
 function setData() {
   if (map && map.getSource('st')) map.getSource('st').setData(data());
@@ -1318,6 +1769,9 @@ function refresh() {
   state.lim = 20;
   setData();
   renderList();
+  if (rtOpen && RT.route) rtBody(false);
+  else if (cardRt && RT.shown) rtDraw(rtList().rows);
+  rtBtnPaint();
 }
 function initMap() {
   map = new maplibregl.Map({
@@ -1326,70 +1780,73 @@ function initMap() {
   });
   map.touchZoomRotate.disableRotation();
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  if (cfg.add && cfg.api) map.addControl(new AddControl(), 'top-right');
   map.on('load', () => {
     const font = cfg.font;
+    // Every charger is drawn at every zoom, no number clusters (owner's decision 20.10.2026): small dots on the
+    // country view that grow as the reader zooms in. Within a layer, working and confirmed chargers are drawn above
+    // the faded ones, and fast DC above the rest (circle-sort-key: the higher key is drawn on top).
+    const nep = ['any', ['==', ['get', 'v'], 'nep'], ['==', ['get', 'v'], 'cl']];
+    const zr = (a, b, c, e) => ['interpolate', ['linear'], ['zoom'], 5, a, 8, b, 12, c, 16, e];
     if (NRG) {
-      // the neighbouring countries under Serbia's layers: grey clusters and white points with a grey ring
-      map.addSource('rg', { type: 'geojson', data: data(true), cluster: true, clusterRadius: 42, clusterMaxZoom: 11 });
-      map.addLayer({ id: 'rg-cl', type: 'circle', source: 'rg', filter: ['has', 'point_count'],
-        paint: { 'circle-color': '#FFFFFF', 'circle-opacity': 0.92, 'circle-radius': ['step', ['get', 'point_count'], 14, 10, 18, 30, 22], 'circle-stroke-width': 2.5, 'circle-stroke-color': '#8A909B' } });
-      map.addLayer({ id: 'rg-cl-n', type: 'symbol', source: 'rg', filter: ['has', 'point_count'],
-        layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': font, 'text-size': 12, 'text-allow-overlap': true },
-        paint: { 'text-color': '#3A3F4A' } });
-      map.addLayer({ id: 'rg-pt', type: 'circle', source: 'rg', filter: ['!', ['has', 'point_count']],
+      // the neighbouring countries under Serbia's layers: white points with a grey ring, smaller and quieter
+      map.addSource('rg', { type: 'geojson', data: data(true) });
+      map.addLayer({ id: 'rg-pt', type: 'circle', source: 'rg',
+        layout: { 'circle-sort-key': ['match', ['get', 'k'], 'dc', 1, 0] },
         paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 5, 12, 8, 16, 11],
+          'circle-radius': zr(2, 3.5, 8, 11),
           'circle-color': ['match', ['get', 'k'], 'dc', '#5C6270', '#FFFFFF'], 'circle-opacity': 0.85,
-          'circle-stroke-width': 2, 'circle-stroke-color': '#8A909B'
+          'circle-stroke-width': zr(0.8, 1.2, 2, 2), 'circle-stroke-color': '#8A909B'
         } });
-      map.addLayer({ id: 'rg-kw', type: 'symbol', source: 'rg', filter: ['!', ['has', 'point_count']], minzoom: 12,
+      map.addLayer({ id: 'rg-kw', type: 'symbol', source: 'rg', minzoom: 12,
         layout: { 'text-field': ['to-string', ['get', 'p']], 'text-font': font, 'text-size': 10, 'text-allow-overlap': true },
         paint: { 'text-color': ['match', ['get', 'k'], 'dc', '#FFFFFF', '#3A3F4A'] } });
-      map.on('click', 'rg-cl', e => {
-        userMove = true;
-        const f = e.features[0];
-        map.getSource('rg').getClusterExpansionZoom(f.properties.cluster_id).then(z => map.easeTo({ center: f.geometry.coordinates, zoom: z + 0.3 }));
-      });
-      map.on('click', 'rg-pt', e => { const s = ST.find(x => x.id === e.features[0].properties.id); if (s) openCard(s, false); });
-      ['rg-cl', 'rg-pt'].forEach(l => {
-        map.on('mouseenter', l, () => { map.getCanvas().style.cursor = 'pointer'; });
-        map.on('mouseleave', l, () => { map.getCanvas().style.cursor = ''; });
-      });
     }
-    map.addSource('st', { type: 'geojson', data: data(), cluster: true, clusterRadius: 42, clusterMaxZoom: 11 });
+    map.addSource('st', { type: 'geojson', data: data() });
     map.addSource('sel', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addSource('me', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-    const nep = ['any', ['==', ['get', 'v'], 'nep'], ['==', ['get', 'v'], 'cl']];
-    map.addLayer({ id: 'cl', type: 'circle', source: 'st', filter: ['has', 'point_count'],
-      paint: { 'circle-color': '#0D111A', 'circle-radius': ['step', ['get', 'point_count'], 15, 10, 19, 30, 24], 'circle-stroke-width': 3, 'circle-stroke-color': 'rgba(217,244,91,.55)' } });
-    map.addLayer({ id: 'cl-n', type: 'symbol', source: 'st', filter: ['has', 'point_count'],
-      layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': font, 'text-size': 13, 'text-allow-overlap': true },
-      paint: { 'text-color': '#FFFFFF' } });
-    map.addLayer({ id: 'pt', type: 'circle', source: 'st', filter: ['!', ['has', 'point_count']],
+    map.addLayer({ id: 'pt', type: 'circle', source: 'st',
+      layout: { 'circle-sort-key': ['+', ['case', nep, 0, 10], ['match', ['get', 'k'], 'dc', 4, 'free', 3, 'tesla', 2, 'off', 0, 1]] },
       paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 6, 12, 9, 16, 12],
+        'circle-radius': zr(3, 4.5, 9, 12),
         'circle-color': ['match', ['get', 'k'], 'dc', '#0D111A', 'free', '#D9F45B', 'off', '#E3E5E9', 'tesla', '#E3E5E9', '#FFFFFF'],
         'circle-opacity': ['case', nep, 0.5, 1],
-        'circle-stroke-width': 2.5,
+        'circle-stroke-width': zr(1.2, 1.6, 2.5, 2.5),
         'circle-stroke-opacity': ['case', nep, 0.55, 1],
         'circle-stroke-color': ['match', ['get', 'k'], 'dc', '#D9F45B', 'off', '#8A909B', 'tesla', '#5C6270', '#0D111A']
       } });
     // favourites: a ring around the point
-    map.addLayer({ id: 'pt-fav', type: 'circle', source: 'st', filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'f'], 1]],
-      paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 10, 12, 14, 16, 17], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-width': 2.5, 'circle-stroke-color': '#6E8A12' } });
-    map.addLayer({ id: 'pt-kw', type: 'symbol', source: 'st', filter: ['!', ['has', 'point_count']], minzoom: 12,
+    map.addLayer({ id: 'pt-fav', type: 'circle', source: 'st', filter: ['==', ['get', 'f'], 1],
+      paint: { 'circle-radius': zr(6, 8, 14, 17), 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-width': zr(1.6, 2, 2.5, 2.5), 'circle-stroke-color': '#6E8A12' } });
+    map.addLayer({ id: 'pt-kw', type: 'symbol', source: 'st', minzoom: 12,
       layout: { 'text-field': ['to-string', ['get', 'p']], 'text-font': font, 'text-size': 10, 'text-allow-overlap': true },
       paint: { 'text-color': ['match', ['get', 'k'], 'dc', '#D9F45B', 'off', '#5C6270', 'tesla', '#3A3F4A', '#0D111A'] } });
     // price next to the pin from zoom 12: 0 RSD / RSD per kWh from a receipt / ~ estimate from the per-minute tariff / ?
-    map.addLayer({ id: 'pt-pr', type: 'symbol', source: 'st', filter: ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'pl'], '']], minzoom: 12,
+    map.addLayer({ id: 'pt-pr', type: 'symbol', source: 'st', filter: ['!=', ['get', 'pl'], ''], minzoom: 12,
       layout: { 'text-field': ['get', 'pl'], 'text-font': font, 'text-size': 11.5, 'text-anchor': 'left', 'text-offset': [1.25, 0], 'text-padding': 2 },
       paint: { 'text-color': ['match', ['get', 'pc'], 'free', '#3F5206', 'old', '#8A909B', 'unk', '#8A909B', '#0D111A'], 'text-halo-color': '#FFFFFF', 'text-halo-width': 2.4 } });
+    // "Punjači na putu": the route under the chargers, its fast chargers as larger dark points with a lime ring
+    map.addSource('rt', { type: 'geojson', data: FC0 });
+    map.addSource('rts', { type: 'geojson', data: FC0 });
+    map.addSource('rte', { type: 'geojson', data: FC0 });
+    const below = NRG ? 'rg-pt' : 'pt';
+    map.addLayer({ id: 'rt-case', type: 'line', source: 'rt', layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#FFFFFF', 'line-width': ['interpolate', ['linear'], ['zoom'], 5, 5, 12, 10] } }, below);
+    map.addLayer({ id: 'rt-line', type: 'line', source: 'rt', layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#2E6BFF', 'line-width': ['interpolate', ['linear'], ['zoom'], 5, 3, 12, 6], 'line-opacity': 0.9 } }, below);
+    // the fast chargers of the route: a blue halo (the route's colour) under their own points
+    map.addLayer({ id: 'rts', type: 'circle', source: 'rts',
+      paint: { 'circle-radius': zr(6, 8, 14, 17), 'circle-color': 'rgba(46,107,255,.2)', 'circle-stroke-width': zr(1.6, 2, 2.5, 2.5), 'circle-stroke-color': '#2E6BFF' } });
     map.addLayer({ id: 'sel', type: 'circle', source: 'sel',
-      paint: { 'circle-radius': 16, 'circle-color': 'rgba(217,244,91,.35)', 'circle-stroke-width': 3, 'circle-stroke-color': '#0D111A' } }, 'pt');
+      paint: { 'circle-radius': zr(9, 11, 16, 16), 'circle-color': 'rgba(217,244,91,.35)', 'circle-stroke-width': 3, 'circle-stroke-color': '#0D111A' } }, 'pt');
+    map.addLayer({ id: 'rte', type: 'circle', source: 'rte',
+      paint: { 'circle-radius': 7, 'circle-color': ['match', ['get', 'e'], 'a', '#FFFFFF', '#0D111A'], 'circle-stroke-width': 3,
+        'circle-stroke-color': ['match', ['get', 'e'], 'a', '#2E6BFF', '#FFFFFF'] } });
     // the reader's own position ("Blizu mene", "Najbliži punjač"): a blue dot, never sent anywhere
     map.addLayer({ id: 'me-halo', type: 'circle', source: 'me', paint: { 'circle-radius': 22, 'circle-color': 'rgba(46,107,255,.16)' } });
     map.addLayer({ id: 'me-dot', type: 'circle', source: 'me', paint: { 'circle-radius': 7, 'circle-color': '#FFFFFF', 'circle-stroke-width': 4, 'circle-stroke-color': '#2E6BFF' } });
     showMe();
+    if (RT.route && (rtOpen || cardRt)) { rtDraw(rtList().rows); RT.shown = true; if (rtOpen) rtFit(); }
     if (nearOpen && NEAR && NEAR.rows) {
       map.getSource('sel').setData({ type: 'FeatureCollection', features: NEAR.rows.length ? [feat(NEAR.rows[0].s)] : [] });
       nearFit(NEAR.pt, NEAR.rows);
@@ -1403,38 +1860,48 @@ function initMap() {
       } else state.bounds = null;
       renderList();
     });
-    map.on('click', 'cl', e => {
-      userMove = true;
-      const f = e.features[0];
-      map.getSource('st').getClusterExpansionZoom(f.properties.cluster_id).then(z => map.easeTo({ center: f.geometry.coordinates, zoom: z + 0.3 }));
+    // One tap handler for Serbia and the region. The dots are small on the country view, so a tap looks at a small box
+    // around the finger (larger on touch screens): one charger there opens its card; several zoom the map in on them
+    // (at least two steps, at most zoom 14), and from zoom 13 the dot nearest to the tap opens.
+    const HIT = NRG ? ['pt', 'rg-pt'] : ['pt'];
+    map.on('click', e => {
+      const r = window.matchMedia && matchMedia('(pointer: coarse)').matches ? 14 : 8, p = e.point;
+      const hits = map.queryRenderedFeatures([[p.x - r, p.y - r], [p.x + r, p.y + r]], { layers: HIT });
+      if (!hits.length) return;
+      const ids = new Set(hits.map(f => f.properties.id)), z0 = map.getZoom();
+      if (ids.size > 1 && z0 < 13) {
+        const b = new maplibregl.LngLatBounds();
+        hits.forEach(f => b.extend(f.geometry.coordinates));
+        const cam = map.cameraForBounds(b, { padding: 60 });
+        userMove = true;
+        map.easeTo({ center: b.getCenter(), zoom: Math.min(14, Math.max(z0 + 2, cam && isFinite(cam.zoom) ? cam.zoom : 0)) });
+        track('map_zoom_in_tap', { n: ids.size });
+        return;
+      }
+      let best = hits[0], bd = Infinity;
+      hits.forEach(f => {
+        const q = map.project(f.geometry.coordinates), dd = (q.x - p.x) * (q.x - p.x) + (q.y - p.y) * (q.y - p.y);
+        if (dd < bd) { bd = dd; best = f; }
+      });
+      const s = ST.find(x => x.id === best.properties.id);
+      if (s) openCard(s, false);
     });
-    map.on('click', 'pt', e => { const s = ST.find(x => x.id === e.features[0].properties.id); if (s) openCard(s, false); });
-    ['cl', 'pt'].forEach(l => {
+    HIT.forEach(l => {
       map.on('mouseenter', l, () => { map.getCanvas().style.cursor = 'pointer'; });
       map.on('mouseleave', l, () => { map.getCanvas().style.cursor = ''; });
     });
     if (sel) {
       map.getSource('sel').setData({ type: 'FeatureCollection', features: [feat(sel)] });
       map.jumpTo({ center: [sel.lon, sel.lat], zoom: 13, padding: padding() });
-    } else if (city) map.jumpTo({ center: [city.lon, city.lat], zoom: 11.2 });
+    } else if (llAt) map.jumpTo({ center: [llAt.lon, llAt.lat], zoom: 17 });
+    else if (city) map.jumpTo({ center: [city.lon, city.lat], zoom: 11.2 });
   });
 }
 
 // ---------- controls ----------
 function paintChips() {
   [].forEach.call($chips.querySelectorAll('.chip'), c =>
-    c.setAttribute('aria-pressed', (c.dataset.f === 'ok' ? state.ok : c.dataset.f === 'tesla' ? TESLA : c.dataset.f === 'cheap' ? state.cheap : c.dataset.f === state.f) ? 'true' : 'false'));
-}
-// "Imam Teslu" is a switch like "Potvrđeni": kept in this browser, it changes which chargers are free and usable
-function setTesla(on, quiet, keep) {
-  TESLA = on;
-  COSTV++;
-  if (!keep) saveTesla();
-  if (!quiet) track('map_tesla', { on });
-  if (!quiet && ACC) accPost('podesavanja', { tesla: on });
-  paintChips();
-  refresh();
-  if (sel) openCard(sel, false, cardNear);
+    c.setAttribute('aria-pressed', (c.dataset.f === 'ok' ? state.ok : c.dataset.f === 'cheap' ? state.cheap : c.dataset.f === state.f) ? 'true' : 'false'));
 }
 function setChip(f, quiet) {
   state.f = f;
@@ -1453,7 +1920,6 @@ $chips.addEventListener('click', e => {
   const c = e.target.closest('.chip');
   if (!c) return;
   if (c.dataset.f === 'ok') setOk(!state.ok);
-  else if (c.dataset.f === 'tesla') setTesla(!TESLA);
   else if (c.dataset.f === 'cheap') { state.cheap = !state.cheap; track('map_sort', { cheapest: state.cheap }); paintChips(); refresh(); }
   else setChip(c.dataset.f);
 });
@@ -1476,7 +1942,11 @@ $list.addEventListener('click', e => {
   if (e.target.closest('[data-more]')) { state.lim += 30; renderList(); return; }
   const b = e.target.closest('.st'); if (b) { const s = ST.find(x => x.id === b.dataset.id); if (s) openCard(s, true); }
 });
-d.addEventListener('keydown', e => { if (e.key === 'Escape' && (sel || nearOpen || carOpen) && !d.querySelector('.lb')) { if (carOpen) closeCar(); else closeCard(); } });
+d.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || d.querySelector('.lb')) return;
+  if (adding) { addEnd(); return; }
+  if (sel || nearOpen || carOpen || rtOpen) { if (carOpen) closeCar(); else closeCard(); }
+});
 $me.addEventListener('click', () => {
   if (!navigator.geolocation) return;
   $me.disabled = true;
@@ -1498,12 +1968,181 @@ $card.addEventListener('click', e => {
   const t = e.target;
   if (t.closest('.nrp .x')) { closeNear(); return; }
   if (t.closest('.carp .x')) { closeCar(); return; }
+  if (t.closest('.rtp .x')) { rtClose(); return; }
+  const rv = t.closest('.rtp a[data-nav]');
+  if (rv) { setNavPref(rv.dataset.nav); track('map_navigate', { station: rv.dataset.st || '', app: rv.dataset.nav, from: rv.dataset.st ? 'route' : 'route_destination' }); return; }
+  if (rtClick(t)) return;
   const nv = t.closest('.nrp a[data-nav]');
   if (nv) { setNavPref(nv.dataset.nav); track('map_navigate', { station: nv.dataset.st || '', app: nv.dataset.nav, from: 'nearest' }); return; }
   if (nearClick(t)) return;
   if (t.closest('[data-car-open]')) { openCar('card'); return; }
   if (t.closest('[data-evo]')) track('map_evolako', { station: sel ? sel.id : '', network: sel ? sel.net || '' : '', car: !!CAR });
 });
+// the "Mapu održava tim Evolako" line under the title (RUNBOOK 3.18; owner's decision 24.10.2026)
+d.querySelector('.map-by a')?.addEventListener('click', () => track('map_evolako', { from: 'zaglavlje' }));
+
+// ---------- "Dodaj punjač": a driver adds a charger the map lacks (POST /api/novi-punjac; RUNBOOK 3.11d) ----------
+// Step 1: a pin in the middle of the map; the driver moves the map until the pin is on the charger ("Ovde sam" centres it
+// on the driver's own position, which stays in the browser). Step 2: a short form in the card panel. Nothing is published
+// before moderation; approved chargers come back from /api/novi-punjaci as "Nije potvrđeno · dodao vozač".
+// Only on blokvolt.rs (cfg.add) and only in Serbia.
+let adding = false, addPt = null, addAt = 0;
+const $wrap = d.querySelector('.map-wrap');
+const ADD_BOX = { s: 41.85, n: 46.2, w: 18.8, e: 23.05 };
+const PIN = '<svg viewBox="0 0 40 52" aria-hidden="true"><path d="M20 50s-16-15.5-16-29a16 16 0 0 1 32 0c0 13.5-16 29-16 29Z" fill="#0D111A" stroke="#fff" stroke-width="2.5"/><circle cx="20" cy="21" r="6.5" fill="#D9F45B"/></svg>';
+const dmy = t => { const x = new Date(t * 1000); return String(x.getDate()).padStart(2, '0') + '.' + String(x.getMonth() + 1).padStart(2, '0') + '.' + x.getFullYear(); };
+const PLUGS = [['type2', 'Type 2'], ['ccs2', 'CCS2'], ['chademo', 'CHAdeMO'], ['tesla', 'Tesla'], ['schuko', T.schuko]];
+function addHint(msg) { const h = $wrap.querySelector('.add-hint'); if (h) h.textContent = msg || ''; }
+function addStart(source, at) {
+  if (!map || adding) return;
+  if (carOpen) closeCar();
+  if (sel || nearOpen) closeCard();
+  adding = true; addAt = Date.now();
+  $wrap.classList.add('is-adding');
+  const pin = d.createElement('div');
+  pin.className = 'add-pin';
+  pin.innerHTML = PIN + '<i></i>';
+  const bar = d.createElement('div');
+  bar.className = 'add-bar';
+  bar.setAttribute('role', 'dialog');
+  bar.setAttribute('aria-label', T.add_t);
+  bar.innerHTML = '<p><b>' + esc(T.add_t) + '</b> ' + esc(T.add_step1) + '</p><p class="add-hint" aria-live="polite"></p><div class="add-acts">' +
+    (navigator.geolocation ? '<button class="btn sm" type="button" data-add="here">' + ICON.pin + esc(T.add_here) + '</button>' : '') +
+    '<button class="btn sm" type="button" data-add="cancel">' + esc(T.add_cancel) + '</button>' +
+    '<button class="btn sm dark" type="button" data-add="next">' + esc(T.add_next) + ' →</button></div>';
+  $wrap.append(pin, bar);
+  bar.addEventListener('click', addBar);
+  if (at) map.jumpTo({ center: [at.lon, at.lat], zoom: Math.max(map.getZoom(), 17) });
+  bar.querySelector('[data-add="next"]').focus({ preventScroll: true });
+  if (!at) track('map_add_start', { source: source || 'button', zoom: Math.round(map.getZoom()) });
+}
+function addEnd() {
+  adding = false; addPt = null;
+  $wrap.classList.remove('is-adding');
+  $wrap.querySelectorAll('.add-pin, .add-bar').forEach(x => x.remove());
+}
+function addBar(e) {
+  const b = e.target.closest('[data-add]');
+  if (!b) return;
+  const a = b.dataset.add;
+  if (a === 'cancel') { addEnd(); return; }
+  if (a === 'here') {
+    b.disabled = true;
+    navigator.geolocation.getCurrentPosition(pos => {
+      b.disabled = false;
+      map.jumpTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 18 });
+      addHint(T.add_here_hint);
+    }, () => { b.disabled = false; addHint(T.no_location); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    return;
+  }
+  // "Dalje": the pin must sit on the charger, so a zoomed-out map is first brought close
+  if (map.getZoom() < 15) { map.easeTo({ zoom: 17 }); addHint(T.add_zoom); return; }
+  const c = map.getCenter();
+  if (c.lat < ADD_BOX.s || c.lat > ADD_BOX.n || c.lng < ADD_BOX.w || c.lng > ADD_BOX.e) { addHint(T.add_out); return; }
+  addPt = { lat: Math.round(c.lat * 1e6) / 1e6, lon: Math.round(c.lng * 1e6) / 1e6 };
+  $wrap.querySelectorAll('.add-pin, .add-bar').forEach(x => x.remove());
+  addForm();
+}
+function addRadio(name, opts, on) {
+  return '<div class="opts" role="radiogroup">' + opts.map(o => '<label class="chip"><input type="radio" name="' + name + '" value="' + o[0] + '"' + (o[0] === on ? ' checked' : '') + '> ' + esc(o[1]) + '</label>').join('') + '</div>';
+}
+function addForm() {
+  const pt = addPt;
+  if (map.getSource('sel')) map.getSource('sel').setData({ type: 'FeatureCollection', features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: [pt.lon, pt.lat] }, properties: {} }] });
+  // a charger already on the map within 60 m: probably the same one, so its card is offered first
+  let dup = null, dm = Infinity;
+  ST.forEach(s => { if (s.cc) return; const m = distKm(pt, s) * 1000; if (m < dm) { dm = m; dup = s; } });
+  const dupHtml = dup && dm <= 60 ? '<div class="vf-warn"><p>' + esc(T.add_dup.replace('{m}', Math.max(1, Math.round(dm))).replace('{t}', title(dup))) + '</p><button class="lnkbtn" type="button" data-add-open="' + esc(dup.id) + '">' + esc(T.add_dup_open) + '</button></div>' : '';
+  const ll = pt.lat.toFixed(5) + ', ' + pt.lon.toFixed(5);
+  $card.innerHTML = '<div class="ccard addp" role="dialog" aria-label="' + esc(T.add_t) + '"><button class="x" type="button" aria-label="' + esc(T.close) + '">' + ICON.x + '</button>' +
+    '<h2>' + esc(T.add_t) + '</h2><p class="addr">' + esc(T.add_lead) + '</p>' + dupHtml +
+    '<form class="car-form add-form" novalidate>' +
+    '<div class="field add-pt"><span>' + esc(T.add_point) + '</span><div class="w-ll"><code translate="no">' + ll + '</code><button class="btn sm" type="button" data-add-move>' + ICON.pin + '<span>' + esc(T.add_move) + '</span></button></div></div>' +
+    '<label class="field"><span>' + esc(T.add_name) + '</span><input class="input" name="n" type="text" maxlength="80" autocomplete="off" placeholder="' + esc(T.add_name_ph) + '"></label>' +
+    '<div class="field"><span>' + esc(T.add_kind) + '</span>' + addRadio('k', [['dc', T.k_dc], ['ac', T.k_ac], ['uticnica', T.k_ut], ['nz', T.k_nz]], 'nz') + '</div>' +
+    '<div class="field"><span>' + esc(T.add_plugs) + '</span><div class="opts">' + PLUGS.map(x => '<label class="chip"><input type="checkbox" name="pl" value="' + x[0] + '"> ' + esc(x[1]) + '</label>').join('') + '</div></div>' +
+    '<label class="field"><span>' + esc(T.add_kw) + '</span><input class="input" name="kw" type="text" inputmode="decimal" maxlength="5" autocomplete="off"></label>' +
+    '<div class="field"><span>' + esc(T.add_acc) + '</span>' + addRadio('acc', [['svi', T.acc_svi], ['gosti', T.acc_gosti], ['nz', T.k_nz]], 'nz') + '</div>' +
+    '<div class="field"><span>' + esc(T.add_fee) + '</span>' + addRadio('fee', [['besplatno', T.fee_free], ['placa', T.fee_paid], ['nz', T.k_nz]], 'nz') + '</div>' +
+    '<label class="field"><span>' + esc(T.add_note) + '</span><textarea class="input" name="c" maxlength="300" rows="2" placeholder="' + esc(T.add_note_ph) + '"></textarea></label>' +
+    '<label class="field"><span>' + esc(T.add_photo) + '</span><input name="foto" type="file" accept="image/*"><small>' + esc(T.photo_note) + '</small></label>' +
+    '<label class="field"><span>' + esc(T.rv_name) + '</span><input class="input" name="nick" type="text" maxlength="40" autocomplete="nickname"><small>' + esc(T.add_nick_note) + '</small></label>' +
+    '<label class="check add-ja"><input type="checkbox" name="ja"> <span>' + esc(T.add_ja) + '</span></label>' +
+    '<input class="hp" name="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+    '<p class="add-msg" role="status"></p>' +
+    '<div class="car-acts"><button class="btn dark" type="submit">' + esc(T.add_send) + '</button><button class="btn" type="button" data-add-cancel>' + esc(T.add_cancel) + '</button></div>' +
+    '<small>' + esc(T.add_rules) + ' <a class="lnk" href="' + esc(lp('/pravila-objavljivanja/#novi-punjac')) + '">' + esc(T.rv_rules_link) + '</a></small></form></div>';
+  $card.classList.add('is-open');
+  const f = $card.querySelector('form'), msg = f.querySelector('.add-msg');
+  const close = () => { addEnd(); $card.classList.remove('is-open'); $card.innerHTML = ''; if (map.getSource('sel')) map.getSource('sel').setData({ type: 'FeatureCollection', features: [] }); };
+  $card.querySelector('.x').addEventListener('click', close);
+  f.querySelector('[data-add-cancel]').addEventListener('click', close);
+  f.querySelector('[data-add-move]').addEventListener('click', () => { const p = addPt; close(); addStart('move', p); });
+  const op = $card.querySelector('[data-add-open]');
+  if (op) op.addEventListener('click', () => { const s = ST.find(x => x.id === op.dataset.addOpen); close(); if (s) openCard(s, true); track('map_add_dup', { station: s ? s.id : '' }); });
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!f.elements.ja.checked) { msg.textContent = T.add_err_ja; f.elements.ja.focus(); return; }
+    const kwv = f.elements.kw.value.trim().replace(',', '.');
+    if (kwv && !(+kwv >= 1 && +kwv <= 400)) { msg.textContent = T.add_err_kw; f.elements.kw.focus(); return; }
+    const fd = new FormData();
+    fd.append('lat', pt.lat); fd.append('lon', pt.lon);
+    fd.append('n', f.elements.n.value); fd.append('k', f.elements.k.value || 'nz'); fd.append('kw', kwv);
+    fd.append('pl', [...f.querySelectorAll('input[name=pl]:checked')].map(x => x.value).join(','));
+    fd.append('acc', f.elements.acc.value || 'nz'); fd.append('fee', f.elements.fee.value || 'nz');
+    fd.append('c', f.elements.c.value); fd.append('nick', f.elements.nick.value); fd.append('ja', '1');
+    fd.append('t', Date.now() - addAt); fd.append('hp', f.elements.hp.value); fd.append('lang', LANG);
+    const btn = f.querySelector('[type=submit]'), file = f.elements.foto.files && f.elements.foto.files[0];
+    btn.disabled = true; msg.textContent = T.photo_wait;
+    (file ? shrink(file).catch(() => null) : Promise.resolve(null)).then(p => {
+      if (p) { fd.append('foto', p.big, 'foto.jpg'); fd.append('thumb', p.th, 'thumb.jpg'); fd.append('w', p.w); fd.append('h', p.h); }
+      return post(cfg.api + '/novi-punjac', fd, true);
+    }).then(j => {
+      btn.disabled = false;
+      if (!j.ok) { msg.textContent = j.error === 'outside' ? T.add_out : j.error === 'confirm' ? T.add_err_ja : errText(j); return; }
+      track('map_add_sent', { kind: f.elements.k.value || 'nz', photo: !!file, plugs: f.querySelectorAll('input[name=pl]:checked').length });
+      f.innerHTML = '<p class="add-done">' + ICON.ok + '<span>' + esc(T.add_thanks) + '</span></p><div class="car-acts"><button class="btn" type="button" data-add-cancel>' + esc(T.close) + '</button></div>';
+      f.querySelector('[data-add-cancel]').addEventListener('click', close);
+    }).catch(() => { btn.disabled = false; msg.textContent = T.rv_err; });
+  });
+}
+// approved chargers from drivers (GET /api/novi-punjaci), as map stations: id vz-<n>, "Nije potvrđeno · dodao vozač"
+function vzStation(x) {
+  const cur = x.k === 'dc' ? 'dc' : 'ac', kw = +x.kw || 0;
+  const pl = x.pl && x.pl.length ? x.pl : (x.k === 'uticnica' ? ['schuko'] : []);
+  const c = pl.map(p => [p, p === 'ccs2' || p === 'chademo' ? 'dc' : p === 'tesla' ? cur : 'ac', p === 'schuko' ? null : kw || null, 1]);
+  return { id: x.id, n: x.n || '', a: '', t: '', lat: +x.lat, lon: +x.lon, net: '', opn: '', c, kd: x.k,
+    dc: cur === 'dc' ? kw : 0, ac: cur === 'ac' ? kw : 0, acc: x.acc === 'gosti' ? 'customers' : '',
+    loc: { q: 'vz', find: x.c || '' }, src: [{ d: 'vz', l: T.src_vz, u: lp('/pravila-objavljivanja/#novi-punjac') }],
+    v: { s: 'nep', g: 'vz', d: dmy(x.ok || x.at) }, vz: { fee: x.fee, acc: x.acc } };
+}
+function loadNovi() {
+  if (!cfg.api || !cfg.add) return;
+  fetch(cfg.api + '/novi-punjaci').then(r => (r.ok ? r.json() : null)).then(j => {
+    if (!j || !j.ok || !j.st || !j.st.length) return;
+    const have = new Set(ST.map(s => s.id)), add = j.st.filter(x => !have.has(x.id) && isFinite(x.lat) && isFinite(x.lon)).map(vzStation);
+    if (!add.length) return;
+    // Serbia's stations come first in ST and the region after them (NSR counts Serbia's)
+    ST = ST.slice(0, NSR).concat(add, ST.slice(NSR));
+    NSR += add.length;
+    ST.forEach((s, i) => { s._i = i; });
+    setData();
+    renderList();
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (id && !sel && id.indexOf('vz-') === 0) { const s = ST.find(x => x.id === id); if (s) openCard(s, false); }
+  }).catch(() => { /* the map works without them */ });
+}
+// the "Dodaj punjač" button sits under the zoom buttons
+class AddControl {
+  onAdd() {
+    const w = d.createElement('div');
+    w.className = 'maplibregl-ctrl maplibregl-ctrl-group map-addctl';
+    w.innerHTML = '<button type="button" title="' + esc(T.add_t) + '"><span aria-hidden="true">+</span>' + esc(T.add_btn) + '</button>';
+    w.querySelector('button').addEventListener('click', () => addStart('button'));
+    return w;
+  }
+  onRemove() {}
+}
 
 // ---------- "Moj auto" ----------
 let carOpen = false, carBack = null;
@@ -1522,7 +2161,8 @@ function modelOpts(list, mk, id) {
 function openCar(source) {
   carBack = sel;
   if (sel) { sel = null; history.replaceState(null, '', location.pathname + location.search); renderList(); }
-  nearOpen = false; cardNear = false; carOpen = true;
+  nearOpen = false; cardNear = false; carOpen = true; cardRt = false; rtOpen = false;
+  if (RT.shown) rtClear();
   $card.innerHTML = '<div class="ccard carp" role="dialog" aria-label="' + esc(T.car_title) + '"><button class="x" type="button" aria-label="' + esc(T.close) + '">' + ICON.x + '</button>' +
     '<h2>' + esc(T.car_title) + '</h2><p class="addr">' + esc(T.car_lead) + '</p><div class="car-body"><p class="nr-wait" role="status"><span class="nr-spin" aria-hidden="true"></span>' + esc(T.loading) + '</p></div></div>';
   $card.classList.add('is-open');
@@ -1575,18 +2215,26 @@ function carForm(list) {
     CAR = { id: c.id, cons: v >= 8 && v <= 40 && Math.abs(v - c.cons) > 0.05 ? Math.round(v * 10) / 10 : null, cab: f.elements.cab.checked, opt: !!(c.opt && f.elements.opt.checked) };
     saveCar();
     track('map_car_set', { make: c.mk, model: c.md, own_consumption: !!CAR.cons, cable: CAR.cab });
-    carChanged(c.mk === 'Tesla');
+    carChanged();
+    carToAccount();
     closeCar();
   });
   const del = f.querySelector('[data-car-del]');
-  if (del) del.addEventListener('click', () => { CAR = null; saveCar(); track('map_car_set', { removed: true }); carChanged(null); closeCar(); });
+  if (del) del.addEventListener('click', () => { CAR = null; saveCar(); track('map_car_set', { removed: true }); carChanged(); carToAccount(); closeCar(); });
 }
-// a new car: new costs everywhere; a Tesla switches "Imam Teslu" on, another car off (no car: the switch stays as it is)
-function carChanged(isTesla) {
+// a new car: new costs everywhere, and a Tesla makes the Tesla-only chargers usable
+function carChanged() {
   COSTV++;
+  TESLA = teslaNow();
   paintCar();
-  if (isTesla != null && isTesla !== TESLA) setTesla(isTesla);
-  else refresh();
+  refresh();
+}
+// the signed-in reader's car goes to the account too (the same fields as "Moj auto" on /nalog/); no car = none there
+function carToAccount() {
+  if (!ACC) return;
+  const c = CAR && CARS && CARS.find(x => x.id === CAR.id);
+  accPost('podesavanja', c ? { car_id: c.id, car: (c.mk + ' ' + c.md).slice(0, 80), car_cons: CAR.cons, car_cab: !!CAR.cab, car_opt: !!CAR.opt, dc: c.pl === 'chademo' ? 'chademo' : 'ccs2' }
+    : { car_id: '', car: '', car_cons: null, car_cab: false, car_opt: false, dc: '' });
 }
 if ($carBtn) $carBtn.addEventListener('click', () => openCar('button'));
 
@@ -1598,10 +2246,12 @@ function fromUrl() {
   const net = p.get('mreza'), g = p.get('grad'), q = p.get('q'), f = p.get('f');
   if (q) { $q.value = q; state.q = q; }
   if (f === 'ok' || p.get('ok') === '1') { state.ok = true; paintChips(); }
-  if (p.get('tesla') === '1') { TESLA = true; paintChips(); }
   const c = g && (cfg.cities || {})[g];
   if (c) city = { lat: c[0], lon: c[1] };
-  paintChips();   // "Imam Teslu" kept in this browser (or the account) shows on its chip from the first paint
+  // ?ll=<lat>,<lon>: the map opens close on that point (the moderation page links new chargers from drivers this way)
+  const ll = (p.get('ll') || '').split(',').map(Number);
+  if (ll.length === 2 && ll.every(isFinite) && Math.abs(ll[0]) <= 90 && Math.abs(ll[1]) <= 180) llAt = { lat: ll[0], lon: ll[1] };
+  paintChips();
   if (net && $chips.querySelector('[data-f="net:' + net + '"]')) setChip('net:' + net, true);
   else if (net) { state.q = state.q || net.replace(/-/g, ' '); refresh(); }
   else if (f && f !== 'ok' && f !== 'cheap' && $chips.querySelector('[data-f="' + f + '"]')) setChip(f, true);
@@ -1641,6 +2291,7 @@ Promise.all([getJson(cfg.stations), cfg.nets ? getJson(cfg.nets).catch(() => ({ 
   NETS = b.nets;
   ST.forEach((s, i) => { s._i = i; });
   COSTV++;
+  TESLA = teslaNow();
   paintCar();
   // favourites of stations that are no longer on the map are dropped quietly
   const ids = new Set(ST.map(s => s.id));
@@ -1648,6 +2299,7 @@ Promise.all([getJson(cfg.stations), cfg.nets ? getJson(cfg.nets).catch(() => ({ 
   favCount();
   fromUrl();
   loadSummaries();
+  loadNovi();
   accSync();
   try { initMap(); } catch (e) { d.getElementById('map').classList.add('is-off'); }
   // scripts/qa/map_extra_test.py reads the pin data (kind, power label, price label) through this, only with ?qa=1;
@@ -1655,7 +2307,22 @@ Promise.all([getJson(cfg.stations), cfg.nets ? getJson(cfg.nets).catch(() => ({ 
   // rows of "Najbliži punjač" for a point (the apps and evolako.rs are compared with it); bvCostQa(id) the cost lines
   if (/[?&]qa=1\b/.test(location.search)) {
     window.bvMapQa = rg => data(rg).features.map(f => f.properties);
+    // every station with its network and the "Kako se puni ovde" scheme it gets (scripts/qa/map_kako_test.py)
+    window.bvKakoQa = () => ST.map(s => { const h = howOf(s); return { id: s.id, how: h && { k: h.k, steps: h.steps, facts: h.facts } }; });
+    window.bvStQa = id => ST.find(x => x.id === id);
     window.bvNearQa = (lat, lon, nep) => nearestList({ lat, lon }, !!nep).rows.map(r => ({ id: r.s.id, t: title(r.s), m: Math.round(r.d * 1000) }));
     window.bvCostQa = id => { const s = ST.find(x => x.id === id), co = s && costOf(s); return co ? { kw: co.main.c.kw, kwh: co.main.c.kwh, km: co.main.c.km, alt: co.alt ? co.alt.c.km : null } : null; };
+    // the map itself, for scripts/qa/map_nocluster_test.py (zoom, rendered dots, taps)
+    window.bvMapObjQa = () => map;
+    // "Punjači na putu" (scripts/qa/map_route_test.py): the rows shown, whether the route is drawn, and the rows for any
+    // line [[lon, lat], …] and radius — evolako.rs is compared with it
+    window.bvRouteQa = () => ({ shown: !!RT.shown, open: rtOpen, r: RT.r, km: RT.route ? RT.route.km : null,
+      rows: RT.route ? rtList().rows.map(x => ({ id: x.s.id, dc: x.s.dc, v: ver(x.s), at: Math.round(x.at * 10) / 10, d: Math.round(x.d * 100) / 100 })) : [],
+      line: map && map.getSource('rt') ? ((map.getSource('rt').serialize() || {}).data || {}).type || null : null });
+    window.bvRouteLineQa = (line, km, r, nep) => {
+      const R = { km, line }, G = rtGeom(R), out = [];
+      ST.forEach(s => { if (rtUsable(s)) { const x = rtDist(G, s); if (x && x.d <= r && (nep || ver(s) === 'ok')) out.push({ id: s.id, at: x.at, d: x.d }); } });
+      return out.sort((a, b) => a.at - b.at || a.d - b.d).map(x => ({ id: x.id, at: Math.round(x.at * 10) / 10, d: Math.round(x.d * 100) / 100 }));
+    };
   }
 }).catch(() => { $count.textContent = T.load_err; });

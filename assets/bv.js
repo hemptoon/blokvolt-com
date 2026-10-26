@@ -231,11 +231,61 @@
     apply();
   });
 
+  // firm cards that open in place (_firm_list.html): opening one sends firm_card_open; a link to
+  // /firme/#firma-<slug> (or the same on a sub-hub or the price page) opens that card and scrolls to it
+  var frows = d.querySelectorAll('details.frow');
+  [].forEach.call(frows, function (el) {
+    el.addEventListener('toggle', function () {
+      if (!el.open) return;
+      if (el.hasAttribute('data-marka')) window.bvTrack('brand_card_open', { brand: el.getAttribute('data-marka'), list: location.pathname });
+      else window.bvTrack('firm_card_open', { firm: el.getAttribute('data-firm') || '', list: location.pathname });
+    });
+  });
+  function openFirmFromHash() {
+    var id = (location.hash || '').slice(1);
+    if (!/^(firma|m)-[a-z0-9-]+$/.test(id)) return;   // m-<slug>: a brand card on /elektricni-automobili/
+    var el = d.getElementById(id);
+    if (!el || el.tagName !== 'DETAILS') return;
+    el.open = true;
+    el.scrollIntoView({ block: 'start' });
+  }
+  if (frows.length) { openFirmFromHash(); window.addEventListener('hashchange', openFirmFromHash); }
+
+  // the rail of offers in an opened firm card: arrows scroll one card; class "fits" (no overflow) hides the arrows
+  // and the fade, class "end" hides the fade at the last card. Swipe and trackpad scroll work without the script.
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  [].forEach.call(d.querySelectorAll('[data-offers]'), function (box) {
+    var rail = box.querySelector('.rail'), prev = box.querySelector('[data-rail-prev]'), next = box.querySelector('[data-rail-next]');
+    if (!rail) return;
+    function upd() {
+      var max = rail.scrollWidth - rail.clientWidth - 2;
+      box.classList.toggle('fits', max <= 0);
+      box.classList.toggle('end', rail.scrollLeft >= max);
+      if (prev) prev.disabled = rail.scrollLeft <= 2;
+      if (next) next.disabled = rail.scrollLeft >= max;
+    }
+    function go(dir) {
+      var c = rail.querySelector('li');
+      rail.scrollBy({ left: dir * (c ? c.getBoundingClientRect().width + 10 : 216), behavior: calm ? 'auto' : 'smooth' });
+    }
+    if (prev) prev.addEventListener('click', function () { go(-1); });
+    if (next) next.addEventListener('click', function () { go(1); });
+    rail.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+    var det = box.closest('details');
+    if (det) det.addEventListener('toggle', upd);
+    upd();
+  });
+
   // forms that post to /api/zahtev (corrections, companies): fields by name; ?firma= ?operator= ?stanica= prefill the page field
   [].forEach.call(d.querySelectorAll('form[data-bv-form]'), function (f) {
     var t0 = Date.now(), kind = f.getAttribute('data-bv-form');
     var p = new URLSearchParams(location.search), slug = p.get('firma') || p.get('operator') || p.get('mreza') || p.get('stanica') || '';
     var what = f.querySelector('select[name=sta]'), where = f.querySelector('[name=gde],[name=stranica]');
+    // ?servis=<id> from a card of the service map (/servisi/, RUNBOOK 3.31)
+    var sv = /^sv-[a-z0-9-]{2,60}$/.test(p.get('servis') || '') ? p.get('servis') : '';
+    if (what && sv) what.value = 'servis';
+    if (where && sv && !slug) where.value = location.origin + '/servisi/#' + sv;
     if (what && p.get('stanica')) what.value = 'stanica';
     else if (what && (p.get('operator') || p.get('mreza'))) what.value = 'mreza';
     if (kind === 'firma' && (p.get('operator') || p.get('mreza'))) { var ko = f.querySelector('[name=vrsta]'); if (ko) ko.value = 'mreza'; }

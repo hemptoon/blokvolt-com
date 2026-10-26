@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mapa punjača za električne automobile u Bosni i Hercegovini | BlokVolt</title>
+<title>Mapa punjača za električne automobile u Bosni i Hercegovini</title>
 <meta name="description" content="Svi javni punjači u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tržni centri, s priključcima, snagom i cijenom gdje je objavljena.">
 <link rel="canonical" href="https://blokvolt.com/ba/mapa/">
 <link rel="alternate" hreflang="hr-HR" href="https://blokvolt.com/hr/karta/">
@@ -19,7 +19,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BlokVolt">
 <meta property="og:locale" content="bs_BA">
-<meta property="og:title" content="Mapa punjača za električne automobile u Bosni i Hercegovini | BlokVolt">
+<meta property="og:title" content="Mapa punjača za električne automobile u Bosni i Hercegovini">
 <meta property="og:description" content="Svi javni punjači u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tržni centri, s priključcima, snagom i cijenom gdje je objavljena.">
 <meta property="og:url" content="https://blokvolt.com/ba/mapa/">
 <meta property="og:image" content="https://blokvolt.com/assets/og/og-ba.png">
@@ -31,13 +31,13 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/onest-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/bv.css?v=ec10b9fb78">
+<link rel="stylesheet" href="/assets/bv.css?v=6d2dc9ae7f">
 <link rel="stylesheet" href="/assets/com.css?v=cc638651e9">
 <link rel="stylesheet" href="/assets/vendor/maplibre-6.11.1/maplibre-gl.css">
 <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin><script type="application/ld+json">{
  "@context": "https://schema.org",
  "@graph": [
-  {"@type": "WebPage", "name": "Mapa punja\u010da za elektri\u010dne automobile u Bosni i Hercegovini | BlokVolt", "description": "Svi javni punja\u010di u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tr\u017eni centri, s priklju\u010dcima, snagom i cijenom gdje je objavljena.", "url": "https://blokvolt.com/ba/mapa/", "inLanguage": "bs", "isPartOf": {"@type": "WebSite", "name": "BlokVolt", "url": "https://blokvolt.com/"}},
+  {"@type": "WebPage", "name": "Mapa punja\u010da za elektri\u010dne automobile u Bosni i Hercegovini", "description": "Svi javni punja\u010di u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tr\u017eni centri, s priklju\u010dcima, snagom i cijenom gdje je objavljena.", "url": "https://blokvolt.com/ba/mapa/", "inLanguage": "bs", "isPartOf": {"@type": "WebSite", "name": "BlokVolt", "url": "https://blokvolt.com/"}},
   {"@type": "Dataset", "name": "Javni punja\u010di za elektri\u010dna vozila u Bosni i Hercegovini", "description": "Svi javni punja\u010di u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tr\u017eni centri, s priklju\u010dcima, snagom i cijenom gdje je objavljena.", "url": "https://blokvolt.com/ba/mapa/", "license": "https://opendatacommons.org/licenses/odbl/1-0/",
    "distribution": {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://blokvolt.com/assets/region/ba/stanice.json"}, "creator": {"@type": "Organization", "name": "BlokVolt", "url": "https://blokvolt.com/"}}
  ]
@@ -74,7 +74,7 @@
 <button class="chip" type="button" data-f="fast" aria-pressed="false"><svg class="i " viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8Z"/></svg>Brzi (DC ≥ 50 kW)</button>
 <button class="chip" type="button" data-f="ac" aria-pressed="false">AC</button>
 <button class="chip" type="button" data-f="chademo" aria-pressed="false">CHAdeMO</button>
-<button class="chip" type="button" data-f="net:moon" aria-pressed="false">MOON <span class="n">21</span></button><button class="chip" type="button" data-f="net:epbih" aria-pressed="false">EPBiH <span class="n">3</span></button></div>
+<button class="chip" type="button" data-f="net:moon" aria-pressed="false">MOON <span class="n">21</span></button><button class="chip" type="button" data-f="net:epbih" aria-pressed="false">EPBiH <span class="n">5</span></button></div>
 </div>
 <div class="map-count" id="mcount" aria-live="polite">…</div>
 <div class="map-list" id="mlist"><noscript><p class="empty">Mapi treba JavaScript. Cijene su na stranici Cijene.</p></noscript></div>
@@ -83,14 +83,14 @@
 <div id="map" role="region" aria-label="Mapa punjača"></div>
 <div class="map-legend" aria-hidden="true"><span><i class="l-dc"></i>DC</span><span><i class="l-ac"></i>AC</span></div>
 <button class="btn sm map-me" id="mme" type="button"><svg class="i " viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Blizu mene</button>
-<div class="map-attr">Mapa: <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/" rel="noopener">OpenMapTiles</a> · Podaci: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · 28.09.2026</div>
+<div class="map-attr">Mapa: <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/" rel="noopener">OpenMapTiles</a> · Podaci: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · 26.10.2026</div>
 <div class="card-ov" id="mcard"></div>
 </div>
 </div>
 <div class="wrap map-below">
 <div class="prose cwide">
 <h2>Odakle su podaci</h2>
-<p>Punjači su iz dvije otvorene baze: <strong>OpenStreetMap</strong> (licenca ODbL) i <strong>Open Charge Map</strong> (CC BY 4.0). Snimak je od 28.09.2026; stanje OpenStreetMapa 27.09.2026, izvoz Open Charge Mapa 22.04.2026. Isto mjesto iz obje baze prikazano je jednom. Mapa prikazuje 149 punjača, od toga 7 s DC punjenjem od 50 kW naviše.</p>
+<p>Punjači su iz dvije otvorene baze: <strong>OpenStreetMap</strong> (licenca ODbL) i <strong>Open Charge Map</strong> (CC BY 4.0). Snimak je od 26.10.2026; stanje OpenStreetMapa 25.10.2026, izvoz Open Charge Mapa 22.04.2026. Isto mjesto iz obje baze prikazano je jednom. Mapa prikazuje 170 punjača, od toga 8 s DC punjenjem od 50 kW naviše.</p>
 <p><strong>Punjači nisu pojedinačno provjereni.</strong> Otvorene baze uređuju vozači i volonteri, pa neki punjač možda više ne radi ili je samo za goste hotela. Službenog spiska javnih punjača u BiH nema: procjene se kreću od 131 (2022.) do oko 350 instaliranih punjača (2024.), od kojih nisu svi javni. Prije puta provjerite kod operatera.</p>
 <p>Elektroprivreda BiH i MOON cijene ne objavljuju u cjenovniku; gdje je cijena poznata, vidi se u kartici punjača. Sve o cijenama: <a href="/ba/cijene/">Cijene</a>.</p>
 <h2>Kako koristiti mapu</h2>
@@ -104,7 +104,7 @@
 <p>Otvoreni podaci: <a href="/assets/region/ba/stanice.json">stanice.json</a> (ODbL 1.0, © OpenStreetMap i Open Charge Map).</p>
 </div>
 </div>
-<script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/ba/stanice.json?v=e29bfd1a02", "prices": "/assets/region/ba/cijene.json?v=6824f371e5", "center": [17.75, 44.15], "zoom": 6.7, "cur": "KM", "num": {"dec": ",", "thou": ".", "trim": false}, "fix": "mailto:hello@blokvolt.com?subject=Ispravka%20punjača%20{id}"}</script>
+<script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/ba/stanice.json?v=7eb4be796f", "prices": "/assets/region/ba/cijene.json?v=6824f371e5", "center": [17.75, 44.15], "zoom": 6.7, "cur": "KM", "num": {"dec": ",", "thou": ".", "trim": false}, "fix": "mailto:hello@blokvolt.com?subject=Ispravka%20punjača%20{id}"}</script>
 <script id="bv-i18n" type="application/json">{"schuko": "Šuko", "other": "Ostalo", "charger": "Punjač", "near": "okolina: {t}", "per_min": "KM/min", "per_kwh": "KM/kWh", "free": "Besplatno", "p_unknown": "Cijena nije poznata. Provjerite u aplikaciji mreže.", "p_free": "Besplatno", "p_exact": "Cijena na ovom punjaču", "p_tier": "Cijena mreže za {c}", "p_seen": "Objavljene cijene ove mreže:", "p_list": "Cjenovnik mreže, važi od {d}", "price": "Cijena", "count_all": "Punjača: {n}", "count": "Prikazano {n} od {all}", "sorted_near": "najbliži prvi", "none": "Nema punjača za ovaj izbor.", "conn": "Priključci", "access": "Pristup", "customers": "Samo za goste ili kupce", "navigate": "Navigacija", "site": "Stranica mreže", "about_net": "Cijene mreže", "nav_in": "Otvori u:", "share": "Podijeli", "copied": "Link je kopiran", "p_old": "Cijena je starija od godinu dana. Provjerite u aplikaciji mreže.", "report": "Prijavi grešku", "data": "Podaci", "close": "Zatvori", "net_known": "Mreža", "operator": "Operater", "net_unknown": "Mreža nije poznata", "no_location": "Lokacija nije dostupna.", "load_err": "Mapa se trenutno ne može učitati. Pokušajte ponovo.", "idle": "Zauzeće nakon punjenja: {x}", "in_view": "U ovom dijelu mape: {n}", "all_serbia": "Cijela BiH", "more": "Prikaži još ({n})", "off": "Ne radi", "v_src": "Iz otvorenih baza OpenStreetMap i Open Charge Map. Punjač nije pojedinačno provjeren — prije polaska provjerite u aplikaciji mreže.", "v_ok": "Potvrđeno", "v_nep": "Nije provjereno", "v_checked": "Provjereno {d}", "where": "Gdje tačno", "addr_none": "Adresa nije poznata — koristite koordinate.", "copy": "Kopiraj", "copied_ll": "Kopirano", "q_osm": "Tačka je iz OpenStreetMapa.", "q_ocm": "Tačka je iz Open Charge Mapa i može odstupati nekoliko desetina metara.", "q_net": "Tačka je sa spiska mreže.", "q_site": "Približna tačka: parking ili objekat.", "q_field": "Tačka je provjerena na terenu.", "fav_add": "Sačuvaj u omiljene", "fav_del": "Ukloni iz omiljenih", "fav_sr": "omiljeno", "fav_none": "Još nema omiljenih punjača. Otvorite punjač i dodirnite zvjezdicu — spisak se čuva samo u ovom pregledniku.", "tesla_only": "Samo Tesla", "p_tesla_only": "Samo za Tesla vozila", "p_est": "≈ {k} KM po kWh ako auto puni sa {w} kW", "status": "Stanje punjača", "st_ok": "radi", "st_off": "ne radi", "today": "danas", "yesterday": "juče", "days_ago": "prije {n} dana"}</script>
 </main>
 <footer class="ft"><div class="wrap">
@@ -134,6 +134,6 @@
 </ul></div>
 </div>
 <div class="ft-legal"><span>© 2026 BlokVolt · podaci provjereni 28.09.2026.</span><span>Mapa: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a></span></div>
-</div></footer><script src="/assets/bv.js?v=6d9ae513f9" defer></script>
-<script type="module" src="/assets/map.js?v=e41d0795b2"></script></body>
+</div></footer><script src="/assets/bv.js?v=95a758e85b" defer></script>
+<script type="module" src="/assets/map.js?v=0f0de34d34"></script></body>
 </html>
