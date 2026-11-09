@@ -32,7 +32,7 @@
 <link rel="preload" href="/assets/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/onest-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/bv.css?v=5010f9a7a2">
+<link rel="stylesheet" href="/assets/bv.css?v=dbaefbf96b">
 <link rel="stylesheet" href="/assets/com.css?v=cc638651e9">
 <link rel="stylesheet" href="/assets/vendor/maplibre-6.11.1/maplibre-gl.css">
 <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin><script type="application/ld+json">{
@@ -103,9 +103,10 @@
 </ul>
 <p>Ако недостасува полнач или податокот е погрешен, пишете на <a href="mailto:hello@blokvolt.com?subject=%D0%98%D1%81%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0%20%D0%BD%D0%B0%20%D0%BC%D0%B0%D0%BF%D0%B0%D1%82%D0%B0%20MK">hello@blokvolt.com</a> или внесете го во <a href="https://www.openstreetmap.org">OpenStreetMap</a>, па ќе се појави на мапата по следното месечно освежување.</p>
 <p>Отворени податоци: <a href="/assets/region/mk/stanice.json">stanice.json</a> (ODbL 1.0, © OpenStreetMap и Open Charge Map).</p>
+<p><strong><a href="/mk/gradovi/">Полначи по градови</a></strong>: список на градовите со бројот на полначи и врска до мапата.</p>
 </div>
 </div>
-<script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/mk/stanice.json?v=e145dec6d6", "prices": "/assets/region/mk/cijene.json?v=3cdd35ffa2", "center": [21.7, 41.6], "zoom": 7.6, "cur": "MKD", "num": {"dec": ",", "thou": ".", "trim": true}, "fix": "mailto:hello@blokvolt.com?subject=Исправка%20на%20полнач%20{id}"}</script>
+<script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/mk/stanice.json?v=e145dec6d6", "prices": "/assets/region/mk/cijene.json?v=3cdd35ffa2", "center": [21.7, 41.6], "zoom": 7.6, "cur": "MKD", "num": {"dec": ",", "thou": ".", "trim": true}, "fix": "mailto:hello@blokvolt.com?subject=Исправка%20на%20полнач%20{id}", "cities": {"skopje": [41.99646, 21.43141], "gevgelija": [41.14289, 22.50108]}}</script>
 <script id="bv-i18n" type="application/json">{"schuko": "Шуко", "other": "Друго", "charger": "Полнач", "near": "околина: {t}", "per_min": "ден./мин", "per_kwh": "ден./kWh", "free": "Бесплатно", "p_unknown": "Цената не е позната. Проверете кај операторот.", "p_free": "Бесплатно", "p_exact": "Цена на овој полнач", "p_tier": "Цена на мрежата за {c}", "p_seen": "Објавени цени на оваа мрежа:", "p_list": "Цени на мрежата, состојба на {d}", "price": "Цена", "count_all": "Полначи: {n}", "count": "Прикажани {n} од {all}", "sorted_near": "најблиските прво", "none": "Нема полначи за овој избор.", "conn": "Приклучоци", "access": "Пристап", "customers": "Само за гости или купувачи", "navigate": "Навигација", "site": "Страница на мрежата", "about_net": "Цени на мрежата", "nav_in": "Отвори во:", "share": "Сподели", "copied": "Врската е копирана", "p_old": "Цената е постара од една година. Проверете кај операторот.", "report": "Пријави грешка", "data": "Податоци", "close": "Затвори", "net_known": "Мрежа", "operator": "Оператор", "net_unknown": "Мрежата не е позната", "no_location": "Локацијата не е достапна.", "load_err": "Мапата моментално не може да се вчита. Обидете се повторно.", "idle": "Блокирање по полнењето: {x}", "in_view": "Во овој дел од мапата: {n}", "all_serbia": "Цела Северна Македонија", "more": "Прикажи уште ({n})", "off": "Не работи", "v_src": "Од отворените бази OpenStreetMap и Open Charge Map. Полначот не е поединечно проверен — пред поаѓање проверете кај операторот.", "v_ok": "Потврдено", "v_nep": "Не е проверено", "v_checked": "Проверено на {d}", "where": "Каде точно", "addr_none": "Адресата не е позната — користете ги координатите.", "copy": "Копирај", "copied_ll": "Копирано", "q_osm": "Точката е од OpenStreetMap.", "q_ocm": "Точката е од Open Charge Map и може да отстапува неколку десетици метри.", "q_net": "Точката е од списокот на мрежата.", "q_site": "Приближна точка: паркинг или објект.", "q_field": "Точката е проверена на терен.", "fav_add": "Зачувај во омилени", "fav_del": "Отстрани од омилени", "fav_sr": "омилено", "fav_none": "Сѐ уште нема омилени полначи. Отворете полнач и допрете ја ѕвездичката — списокот се чува само во овој прелистувач.", "tesla_only": "Само Tesla", "p_tesla_only": "Само за возила Tesla", "p_est": "≈ {k} ден. за kWh ако автомобилот полни со {w} kW", "status": "Состојба на полначот", "st_ok": "работи", "st_off": "не работи", "today": "денес", "yesterday": "вчера", "days_ago": "пред {n} дена"}</script>
 </main>
 <footer class="ft"><div class="wrap">
@@ -136,6 +137,6 @@
 </ul></div>
 </div>
 <div class="ft-legal"><span>© 2026 BlokVolt · податоците се проверени на 27.10.2026</span><span>Мапа: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a></span></div>
-</div></footer><script src="/assets/bv.js?v=2154178aff" defer></script>
-<script type="module" src="/assets/map.js?v=a8c0ab4865"></script></body>
+</div></footer><script src="/assets/bv.js?v=405823f96c" defer></script>
+<script type="module" src="/assets/map.js?v=b1575f969e"></script></body>
 </html>

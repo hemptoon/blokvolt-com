@@ -31,7 +31,7 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/onest-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/bv.css?v=5010f9a7a2">
+<link rel="stylesheet" href="/assets/bv.css?v=dbaefbf96b">
 <link rel="stylesheet" href="/assets/com.css?v=cc638651e9">
 <link rel="stylesheet" href="/assets/vendor/maplibre-6.11.1/maplibre-gl.css">
 <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin><script type="application/ld+json">{
@@ -100,9 +100,10 @@
 </ul>
 <p>Punjač nedostaje ili je podatak pogrešan? Pišite na <a href="mailto:hello@blokvolt.com?subject=Ispravka%20mape%20ME">hello@blokvolt.com</a> — ili ga unesite u <a href="https://www.openstreetmap.org">OpenStreetMap</a>, pa će se pojaviti na mapi nakon sljedećeg mjesečnog osvježavanja.</p>
 <p>Otvoreni podaci: <a href="/assets/region/me/stanice.json">stanice.json</a> (ODbL 1.0, © OpenStreetMap i Open Charge Map).</p>
+<p><strong><a href="/me/gradovi/">Punjači po gradovima</a></strong>: spisak gradova sa brojem punjača i linkom na mapu.</p>
 </div>
 </div>
-<script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/me/stanice.json?v=aa9efd4943", "prices": "/assets/region/me/cijene.json?v=339ab0cca5", "center": [19.25, 42.75], "zoom": 7.6, "cur": "EUR", "num": {"dec": ",", "thou": ".", "trim": false}, "fix": "mailto:hello@blokvolt.com?subject=Ispravka%20punjača%20{id}"}</script>
+<script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/me/stanice.json?v=aa9efd4943", "prices": "/assets/region/me/cijene.json?v=339ab0cca5", "center": [19.25, 42.75], "zoom": 7.6, "cur": "EUR", "num": {"dec": ",", "thou": ".", "trim": false}, "fix": "mailto:hello@blokvolt.com?subject=Ispravka%20punjača%20{id}", "cities": {"podgorica": [42.44124, 19.26309], "bar": [42.0937, 19.09841], "budva": [42.28721, 18.83922], "tivat": [42.43623, 18.69361], "herceg-novi": [42.45306, 18.5375]}}</script>
 <script id="bv-i18n" type="application/json">{"schuko": "Šuko", "other": "Ostalo", "charger": "Punjač", "near": "okolina: {t}", "per_min": "€/min", "per_kwh": "€/kWh", "free": "Besplatno", "p_unknown": "Cijena nije poznata. Provjerite kod operatera.", "p_free": "Besplatno", "p_exact": "Cijena na ovom punjaču", "p_tier": "Cijena mreže za {c}", "p_seen": "Objavljene cijene ove mreže:", "p_list": "Cjenovnik mreže, važi od {d}", "price": "Cijena", "count_all": "Punjača: {n}", "count": "Prikazano {n} od {all}", "sorted_near": "najbliži prvi", "none": "Nema punjača za ovaj izbor.", "conn": "Priključci", "access": "Pristup", "customers": "Samo za goste ili kupce", "navigate": "Navigacija", "site": "Sajt mreže", "about_net": "Cijene mreže", "nav_in": "Otvori u:", "share": "Podijeli", "copied": "Link je kopiran", "p_old": "Cijena je starija od godinu dana. Provjerite kod operatera.", "report": "Prijavi grešku", "data": "Podaci", "close": "Zatvori", "net_known": "Mreža", "operator": "Operater", "net_unknown": "Mreža nije poznata", "no_location": "Lokacija nije dostupna.", "load_err": "Mapa trenutno ne može da se učita. Pokušajte ponovo.", "idle": "Zauzeće nakon punjenja: {x}", "in_view": "U ovom dijelu mape: {n}", "all_serbia": "Cijela Crna Gora", "more": "Prikaži još ({n})", "off": "Ne radi", "v_src": "Iz otvorenih baza OpenStreetMap i Open Charge Map. Punjač nije pojedinačno provjeren — prije polaska provjerite kod operatera.", "v_ok": "Potvrđeno", "v_nep": "Nije provjereno", "v_checked": "Provjereno {d}", "where": "Gdje tačno", "addr_none": "Adresa nije poznata — koristite koordinate.", "copy": "Kopiraj", "copied_ll": "Kopirano", "q_osm": "Tačka je iz OpenStreetMapa.", "q_ocm": "Tačka je iz Open Charge Mapa i može odstupati nekoliko desetina metara.", "q_net": "Tačka je sa spiska mreže.", "q_site": "Približna tačka: parking ili objekat.", "q_field": "Tačka je provjerena na terenu.", "fav_add": "Sačuvaj u omiljene", "fav_del": "Ukloni iz omiljenih", "fav_sr": "omiljeno", "fav_none": "Još nema omiljenih punjača. Otvorite punjač i dodirnite zvjezdicu — spisak se čuva samo u ovom pregledaču.", "tesla_only": "Samo Tesla", "p_tesla_only": "Samo za Tesla vozila", "p_est": "≈ {k} € po kWh ako auto puni sa {w} kW", "status": "Stanje punjača", "st_ok": "radi", "st_off": "ne radi", "today": "danas", "yesterday": "juče", "days_ago": "prije {n} dana"}</script>
 </main>
 <footer class="ft"><div class="wrap">
@@ -133,6 +134,6 @@
 </ul></div>
 </div>
 <div class="ft-legal"><span>© 2026 BlokVolt · podaci provjereni 27.10.2026.</span><span>Mapa: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a></span></div>
-</div></footer><script src="/assets/bv.js?v=2154178aff" defer></script>
-<script type="module" src="/assets/map.js?v=a8c0ab4865"></script></body>
+</div></footer><script src="/assets/bv.js?v=405823f96c" defer></script>
+<script type="module" src="/assets/map.js?v=b1575f969e"></script></body>
 </html>
