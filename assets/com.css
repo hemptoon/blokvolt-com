@@ -1,6 +1,6 @@
 /* blokvolt.com — additions to the design system of www.blokvolt.rs (bv.css). Local sections /hr/ /ba/ /me/ and the English pages. */
 .logo .loc-tag{font-size:11px;font-weight:750;letter-spacing:.06em;background:var(--volt);color:var(--vink);border-radius:6px;padding:3px 6px;margin-left:2px}
-.kick{font-size:13px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--voltd);margin:0 0 8px}
+.kick{font-size:13px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:#58700D;margin:0 0 8px}
 .ph .ph-chips{margin-top:14px;flex-wrap:wrap}
 .ph .ph-chips .chip{text-decoration:none}
 .ph .ph-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
@@ -92,6 +92,10 @@ small.csrc a{color:var(--mut)}
 .tile.big{min-height:170px}
 .tiles.loc2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .tiles.loc2 .tile.big{grid-column:auto}
+/* REL1: the world block on the English home (four short links in one row; two per row on small screens) */
+.tiles.w4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tiles.w4 .tile{min-height:0}
+@media (max-width:900px){.tiles.w4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* the tariff names are long (blocks, day/night): the select takes the whole row, the own-price field goes below it */
 .calc .fields2 .field.wide{grid-column:1/-1}
@@ -106,3 +110,8 @@ small.csrc a{color:var(--mut)}
  .nd dt{margin-top:6px}
  .sub-h{flex-direction:column;gap:6px}
 }
+/* world layer footer block (G0, scripts/world_shell.py) */
+.ft-world{border-top:1px solid rgba(255,255,255,.12);padding:18px 0 4px}
+.ft-world h2{font-size:13px;margin:0 0 8px}
+.ft-world ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 22px}
+.ft-world a{display:inline-flex;min-height:32px;align-items:center}
