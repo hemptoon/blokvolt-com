@@ -81,7 +81,7 @@ jobs:
         if: steps.state.outputs.go == 'true'
         working-directory: src
         run: |
-          pip install -q jinja2 markdown beautifulsoup4 pillow
+          pip install -q jinja2 markdown beautifulsoup4 pillow babel
           bash scripts/fetch_fonts.sh >/dev/null
           python3 scripts/com_maps.py
           python3 build.py > /dev/null
@@ -101,8 +101,11 @@ jobs:
           RD: ${{ steps.state.outputs.rd }}
         run: |
           # world files go only into the artifact (below), never into this repository
+          # (REL1 11.11.2026: + the G3/G4/G5/G7/G10 pages, llms.txt and the Cloudflare-only _headers of the world build)
           rsync -a --exclude=/charging-stations/ --exclude=/charging-networks/ --exclude=/map/ --exclude=/sr/ --exclude=/ru/ \
             --exclude=/about/ --exclude=/sources/ --exclude=/methodology/ --exclude=/assets/world/ --exclude='/sitemap-world*' \
+            --exclude=/charging-prices/ --exclude=/how-to-pay/ --exclude=/routes/ --exclude=/press/ --exclude=/data-for-business/ \
+            --exclude=/developers/ --exclude=/map-for-your-site/ --exclude=/embed/ --exclude=/llms.txt --exclude=/_headers \
             src/dist-com/ site/
           mkdir -p site/.github
           python3 -c '
@@ -136,7 +139,17 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p "$RUNNER_TEMP/live"
-          for f in $(cd src/dist-com && ls sitemap*.xml); do curl -fsS --max-time 60 -o "$RUNNER_TEMP/live/$f" "https://blokvolt.com/$f" || true; done
+          # a sitemap that answers 404 did not exist before: an empty <urlset> tells indexnow.py to send all its URLs (first
+          # publication); any other failure leaves no file, and nothing is sent for that sitemap
+          for f in $(cd src/dist-com && ls sitemap*.xml); do
+            code=$(curl -sS --max-time 60 -o "$RUNNER_TEMP/live/$f" -w '%{http_code}' "https://blokvolt.com/$f" || echo 000)
+            if [ "$code" = 404 ]; then
+              printf '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>\n' > "$RUNNER_TEMP/live/$f"
+            elif [ "$code" != 200 ]; then
+              rm -f "$RUNNER_TEMP/live/$f"
+            fi
+            echo "live $f: HTTP $code"
+          done
       - name: Keep the built sitemaps for IndexNow
         if: steps.state.outputs.go == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -179,5 +192,6 @@ jobs:
           script=$(find . -name indexnow.py | head -1)
           for f in $(find . -path '*dist-com/sitemap*.xml'); do
             n=$(basename "$f"); old=$(find . -path '*live/*' -name "$n" | head -1)
-            if [ -n "$old" ]; then python3 "$script" "$old" "$f"; else echo "no live $n before this deploy: nothing sent for it (first publication)"; fi
+            if grep -q '<sitemapindex' "$f"; then continue; fi   # sitemap-world.xml is the index of the others
+            if [ -n "$old" ]; then python3 "$script" "$old" "$f" || echo "IndexNow for $n failed"; else echo "live $n could not be read before this deploy: nothing sent for it"; fi
           done
