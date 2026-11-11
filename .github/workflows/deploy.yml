@@ -8,6 +8,12 @@
 #   2. commits the built site to main here — the history, and the fallback if Pages is ever switched back to "Deploy from a
 #      branch"; files that exist only here are kept (this workflow never deletes);
 #   3. deploys that tree to GitHub Pages (Settings → Pages → Source: "GitHub Actions"; custom domain blokvolt.com).
+# World layer (bvcom README §3, prepared 09.11.2026 by G0/DEV, merged only with the first release of the world layer):
+#   when content/world/config.json of blokvolt-rs says "public": true, the build downloads the world data (pages bundle,
+#   manifest) from WORLD_DATA, runs gen_com.py with BV_WORLD_PAGES/BV_WORLD_MANIFEST, and the world files go ONLY into the
+#   Pages artifact — they are not committed here, so this repository does not grow by the data on every update.
+#   IndexNow for blokvolt.com: the key file of blokvolt-rs (static/<key>.txt) is served at the root, and after the deploy
+#   the changed URLs of sitemap.xml and the world sitemaps are sent (scripts/indexnow.py with INDEXNOW_HOST).
 # No secrets: hemptoon/blokvolt-rs is public, and this repository's own GITHUB_TOKEN commits here and deploys Pages.
 # Security (as in blokvolt-rs, RUNBOOK 3.33): actions pinned to commit hashes; to update one, take a release at least a week
 # old (git ls-remote --tags https://github.com/actions/<name>) and change the pin here.
@@ -23,6 +29,8 @@ on:
         default: false
 permissions:
   contents: read
+env:
+  WORLD_DATA: https://hemptoon.github.io/blokvolt-tiles   # the data host of the world layer; R2 when the owner decides
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -73,18 +81,32 @@ jobs:
         if: steps.state.outputs.go == 'true'
         working-directory: src
         run: |
-          pip install -q jinja2 markdown beautifulsoup4 pillow
+          pip install -q jinja2 markdown beautifulsoup4 pillow babel
           bash scripts/fetch_fonts.sh >/dev/null
           python3 scripts/com_maps.py
           python3 build.py > /dev/null
-          python3 scripts/gen_com.py
+          if python3 -c 'import json,sys; sys.exit(0 if json.load(open("content/world/config.json")).get("public") else 1)' 2>/dev/null; then
+            python3 scripts/dev_world_data.py "$WORLD_DATA" "$RUNNER_TEMP/world" > "$RUNNER_TEMP/world.env"
+            . "$RUNNER_TEMP/world.env"
+            BV_WORLD_PAGES="$PAGES" BV_WORLD_MANIFEST="$MANIFEST" python3 scripts/gen_com.py
+            echo "WORLD=1" >> "$GITHUB_ENV"
+          else
+            python3 scripts/gen_com.py
+          fi
+          cp static/*.txt dist-com/ 2>/dev/null || true   # IndexNow key file (the same key as www.blokvolt.rs)
       - name: Commit the built site here (never deletes)
         if: steps.state.outputs.go == 'true'
         env:
           RS: ${{ steps.state.outputs.rs }}
           RD: ${{ steps.state.outputs.rd }}
         run: |
-          rsync -a src/dist-com/ site/
+          # world files go only into the artifact (below), never into this repository
+          # (REL1 11.11.2026: + the G3/G4/G5/G7/G10 pages, llms.txt and the Cloudflare-only _headers of the world build)
+          rsync -a --exclude=/charging-stations/ --exclude=/charging-networks/ --exclude=/map/ --exclude=/sr/ --exclude=/ru/ \
+            --exclude=/about/ --exclude=/sources/ --exclude=/methodology/ --exclude=/assets/world/ --exclude='/sitemap-world*' \
+            --exclude=/charging-prices/ --exclude=/how-to-pay/ --exclude=/routes/ --exclude=/press/ --exclude=/data-for-business/ \
+            --exclude=/developers/ --exclude=/map-for-your-site/ --exclude=/embed/ --exclude=/llms.txt --exclude=/_headers \
+            src/dist-com/ site/
           mkdir -p site/.github
           python3 -c '
           import json, os, datetime
@@ -101,10 +123,44 @@ jobs:
             git commit -q -m "Build from hemptoon/blokvolt-rs@${RS:0:7} (region-data ${RD:0:7})"
             git push -q origin HEAD:main
           fi
+      - name: Artifact tree = this repository + the world files
+        if: steps.state.outputs.go == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/artifact"
+          rsync -a --exclude=.git site/ "$RUNNER_TEMP/artifact/"
+          rsync -a src/dist-com/ "$RUNNER_TEMP/artifact/"
+          echo "artifact files: $(find "$RUNNER_TEMP/artifact" -type f | wc -l)"
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: steps.state.outputs.go == 'true'
         with:
-          path: site
+          path: ${{ runner.temp }}/artifact
+      - name: Live sitemaps before the deploy (for IndexNow)
+        if: steps.state.outputs.go == 'true'
+        continue-on-error: true
+        run: |
+          mkdir -p "$RUNNER_TEMP/live"
+          # a sitemap that answers 404 did not exist before: an empty <urlset> tells indexnow.py to send all its URLs (first
+          # publication); any other failure leaves no file, and nothing is sent for that sitemap
+          for f in $(cd src/dist-com && ls sitemap*.xml); do
+            code=$(curl -sS --max-time 60 -o "$RUNNER_TEMP/live/$f" -w '%{http_code}' "https://blokvolt.com/$f" || echo 000)
+            if [ "$code" = 404 ]; then
+              printf '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>\n' > "$RUNNER_TEMP/live/$f"
+            elif [ "$code" != 200 ]; then
+              rm -f "$RUNNER_TEMP/live/$f"
+            fi
+            echo "live $f: HTTP $code"
+          done
+      - name: Keep the built sitemaps for IndexNow
+        if: steps.state.outputs.go == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sitemaps
+          path: |
+            src/dist-com/sitemap*.xml
+            ${{ runner.temp }}/live/
+            src/scripts/indexnow.py
+            src/static/*.txt
+          retention-days: 3
   deploy:
     needs: build
     if: needs.build.outputs.deploy == 'true'
@@ -119,3 +175,23 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+  indexnow:
+    needs: [build, deploy]
+    if: needs.build.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: sitemaps
+      - name: IndexNow for blokvolt.com (changed URLs only; RUNBOOK 3.37)
+        env:
+          INDEXNOW_HOST: blokvolt.com
+        run: |
+          script=$(find . -name indexnow.py | head -1)
+          for f in $(find . -path '*dist-com/sitemap*.xml'); do
+            n=$(basename "$f"); old=$(find . -path '*live/*' -name "$n" | head -1)
+            if grep -q '<sitemapindex' "$f"; then continue; fi   # sitemap-world.xml is the index of the others
+            if [ -n "$old" ]; then python3 "$script" "$old" "$f" || echo "IndexNow for $n failed"; else echo "live $n could not be read before this deploy: nothing sent for it"; fi
+          done
