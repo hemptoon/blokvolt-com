@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="bs">
+<html lang="bs" data-theme="dark">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#0B0F17">
+<script>(function(){try{if(localStorage.getItem('bv_theme')==='light'){document.documentElement.setAttribute('data-theme','light');document.querySelector('meta[name=theme-color]').content='#FFFFFF'}}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mapa punjača za električne automobile u BiH | BlokVolt</title>
 <meta name="description" content="Svi javni punjači u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tržni centri, s priključcima, snagom i cijenom gdje je objavljena.">
@@ -12,6 +14,7 @@
 <link rel="alternate" hreflang="sq-AL" href="https://blokvolt.com/al/harta/">
 <link rel="alternate" hreflang="sq" href="https://blokvolt.com/xk/harta/">
 <link rel="alternate" hreflang="mk-MK" href="https://blokvolt.com/mk/mapa/">
+<link rel="alternate" hreflang="sl-SI" href="https://blokvolt.com/si/zemljevid/">
 <link rel="alternate" hreflang="sr" href="https://www.blokvolt.rs/mapa/">
 <link rel="alternate" hreflang="en" href="https://www.blokvolt.rs/en/mapa/">
 <link rel="alternate" hreflang="ru" href="https://www.blokvolt.rs/ru/mapa/">
@@ -22,17 +25,16 @@
 <meta property="og:title" content="Mapa punjača za električne automobile u BiH | BlokVolt">
 <meta property="og:description" content="Svi javni punjači u BiH na jednoj mapi: Elektroprivreda BiH, MOON, hoteli i tržni centri, s priključcima, snagom i cijenom gdje je objavljena.">
 <meta property="og:url" content="https://blokvolt.com/ba/mapa/">
-<meta property="og:image" content="https://blokvolt.com/assets/og/og-ba.png">
-<meta property="og:image:width" content="1200">
+<meta property="og:image" content="https://blokvolt.com/assets/og/og-ba.png"><meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/onest-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/bv.css?v=c41a83c63f">
-<link rel="stylesheet" href="/assets/com.css?v=d29be91ad5">
+<link rel="stylesheet" href="/assets/com.css?v=7602a4c743">
+<link rel="stylesheet" href="/assets/theme.css?v=6d17cc5bb2">
 <link rel="stylesheet" href="/assets/vendor/maplibre-6.11.1/maplibre-gl.css">
 <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin><script type="application/ld+json">{
  "@context": "https://schema.org",
@@ -46,8 +48,9 @@
 <a class="skip" href="#main">Preskoči na sadržaj</a>
 <header class="hd"><div class="wrap hd-in">
 <a class="logo" href="/ba/" aria-label="BlokVolt — početna"><svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#0B0F17"/><path d="M27 10 14 36h12l-4 18 20-28H30l4-16z" fill="#D9F45B"/></svg><span translate="no">blok<b>volt</b></span><span class="loc-tag" translate="no">BA</span></a>
-<nav class="hd-nav" id="hd-nav" aria-label="Meni"><a href="/ba/mapa/" aria-current="page">Mapa</a><a href="/ba/cijene/">Cijene</a><a href="/ba/punjenje-kod-kuce/">Kod kuće</a><a href="/ba/cijena-struje/">Cijena struje</a><a href="/ba/poticaji/">Poticaji</a><a href="/ba/putovanje/">Na putu</a><a href="/ba/zgrade/">Zgrade</a><a href="/ba/statistika/">Statistika</a></nav>
+<nav class="hd-nav" id="hd-nav" aria-label="Meni"><a href="/ba/mapa/" aria-current="page">Mapa</a><a href="/ba/cijene/">Cijene</a><a href="/ba/punjenje-kod-kuce/">Kod kuće</a><a href="/ba/cijena-struje/">Cijena struje</a><a href="/ba/poticaji/">Poticaji</a><a href="/ba/putovanje/">Na putu</a><a href="/ba/zgrade/">Zgrade</a><a href="/ba/statistika/">Statistika</a><div class="hd-thm"><span aria-hidden="true">Tamna tema</span><button class="thm" type="button" role="switch" aria-checked="true" data-theme-sw aria-label="Tamna tema"><span class="thm-k" aria-hidden="true"></span><svg class="thm-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="thm-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg></button></div></nav>
 <div class="hd-tools">
+<button class="thm thm-hd" type="button" role="switch" aria-checked="true" data-theme-sw aria-label="Tamna tema"><span class="thm-k" aria-hidden="true"></span><svg class="thm-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg><svg class="thm-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg></button>
 <div class="lang"><button class="ib" type="button" data-lang-toggle aria-expanded="false" aria-haspopup="true"><svg class="i " viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.4 5.2 3.4 8.5s-1.1 6.1-3.4 8.5c-2.3-2.4-3.4-5.2-3.4-8.5S9.7 5.9 12 3.5Z"/></svg><span class="sr-only">Zemlja i jezik: </span><span translate="no">BA</span></button>
 <ul data-lang-menu class="lang-menu" role="menu" hidden translate="no">
 <li role="none"><a role="menuitem" hreflang="en" lang="en" href="/">English</a></li>
@@ -58,6 +61,7 @@
 <li role="none"><a role="menuitem" hreflang="sq-AL" lang="sq-AL" href="/al/">Shqipëria</a></li>
 <li role="none"><a role="menuitem" hreflang="sq" lang="sq" href="/xk/">Kosova</a></li>
 <li role="none"><a role="menuitem" hreflang="mk-MK" lang="mk-MK" href="/mk/">Северна Македонија</a></li>
+<li role="none"><a role="menuitem" hreflang="sl-SI" lang="sl-SI" href="/si/">Slovenija</a></li>
 </ul></div>
 <button class="ib burger" type="button" aria-controls="hd-nav" aria-expanded="false" aria-label="Meni"><svg class="i " viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </div>
@@ -108,7 +112,7 @@
 <script id="map-cfg" type="application/json">{"style": "https://tiles.openfreemap.org/styles/positron", "font": ["Noto Sans Bold"], "stations": "/assets/region/ba/stanice.json?v=ec49b34c1a", "prices": "/assets/region/ba/cijene.json?v=6824f371e5", "center": [17.75, 44.15], "zoom": 6.7, "cur": "KM", "num": {"dec": ",", "thou": ".", "trim": false}, "fix": "mailto:hello@blokvolt.com?subject=Ispravka%20punjača%20{id}", "cities": {"sarajevo": [43.84864, 18.35644], "banja-luka": [44.77879, 17.20629], "mostar": [43.34333, 17.80806], "bihac": [44.81694, 15.87083], "hadzici": [43.82222, 18.20667], "zenica": [44.20169, 17.90397], "gracanica": [44.70307, 18.3101], "travnik": [44.22637, 17.66583], "tuzla": [44.53842, 18.66709], "laktasi": [44.90857, 17.30135], "ljubuski": [43.19694, 17.545], "mrkonjic-grad": [44.41729, 17.08288], "cazin": [44.96694, 15.94306], "kakanj": [44.13311, 18.12292], "odzak": [45.02461, 18.32107], "konjic": [43.65126, 17.96082], "prnjavor": [44.87021, 17.66256], "sanski-most": [44.7667, 16.667]}}</script>
 <script id="bv-i18n" type="application/json">{"schuko": "Šuko", "other": "Ostalo", "charger": "Punjač", "near": "okolina: {t}", "per_min": "KM/min", "per_kwh": "KM/kWh", "free": "Besplatno", "p_unknown": "Cijena nije poznata. Provjerite u aplikaciji mreže.", "p_free": "Besplatno", "p_exact": "Cijena na ovom punjaču", "p_tier": "Cijena mreže za {c}", "p_seen": "Objavljene cijene ove mreže:", "p_list": "Cjenovnik mreže, važi od {d}", "price": "Cijena", "count_all": "Punjača: {n}", "count": "Prikazano {n} od {all}", "sorted_near": "najbliži prvi", "none": "Nema punjača za ovaj izbor.", "conn": "Priključci", "access": "Pristup", "customers": "Samo za goste ili kupce", "navigate": "Navigacija", "site": "Stranica mreže", "about_net": "Cijene mreže", "nav_in": "Otvori u:", "share": "Podijeli", "copied": "Link je kopiran", "p_old": "Cijena je starija od godinu dana. Provjerite u aplikaciji mreže.", "report": "Prijavi grešku", "data": "Podaci", "close": "Zatvori", "net_known": "Mreža", "operator": "Operater", "net_unknown": "Mreža nije poznata", "no_location": "Lokacija nije dostupna.", "load_err": "Mapa se trenutno ne može učitati. Pokušajte ponovo.", "idle": "Zauzeće nakon punjenja: {x}", "in_view": "U ovom dijelu mape: {n}", "all_serbia": "Cijela BiH", "more": "Prikaži još ({n})", "off": "Ne radi", "v_src": "Iz otvorenih baza OpenStreetMap i Open Charge Map. Punjač nije pojedinačno provjeren — prije polaska provjerite u aplikaciji mreže.", "v_ok": "Potvrđeno", "v_mr": "na stranici mreže punjača", "v_te": "na zvaničnom spisku Tesle", "v_own": "na stranici vlasnika lokacije", "v_nep": "Nije provjereno", "v_checked": "Provjereno {d}", "where": "Gdje tačno", "addr_none": "Adresa nije poznata — koristite koordinate.", "copy": "Kopiraj", "copied_ll": "Kopirano", "q_osm": "Tačka je iz OpenStreetMapa.", "q_ocm": "Tačka je iz Open Charge Mapa i može odstupati nekoliko desetina metara.", "q_net": "Tačka je sa spiska mreže.", "q_site": "Približna tačka: parking ili objekat.", "q_field": "Tačka je provjerena na terenu.", "fav_add": "Sačuvaj u omiljene", "fav_del": "Ukloni iz omiljenih", "fav_sr": "omiljeno", "fav_none": "Još nema omiljenih punjača. Otvorite punjač i dodirnite zvjezdicu — spisak se čuva samo u ovom pregledniku.", "tesla_only": "Samo Tesla", "p_tesla_only": "Samo za Tesla vozila", "p_est": "≈ {k} KM po kWh ako auto puni sa {w} kW", "status": "Stanje punjača", "st_ok": "radi", "st_off": "ne radi", "today": "danas", "yesterday": "juče", "days_ago": "prije {n} dana"}</script>
 </main>
-<footer class="ft"><div class="wrap">
+<footer class="ft wft-loc"><div class="wft-out"><div class="wft-pan"><div class="wft-locin">
 <div class="ft-in">
 <div><a class="logo" href="/ba/" aria-label="BlokVolt — početna"><svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#0B0F17"/><path d="M27 10 14 36h12l-4 18 20-28H30l4-16z" fill="#D9F45B"/></svg><span translate="no">blok<b>volt</b></span></a>
 <p>Gdje napuniti električni automobil u Bosni i Hercegovini, koliko to košta i šta kažu propisi — s izvorima i datumima.</p>
@@ -126,18 +130,24 @@
 </ul></div>
 <div><h2>BlokVolt</h2><ul>
 <li><a href="/ba/metodologija/">Metodologija</a></li>
-<li><a href="/" hreflang="en" lang="en">English — regija</a></li>
+<li><a href="/" hreflang="en" lang="en">Karta punjača u svijetu</a></li>
+<li><a href="/western-balkans/" hreflang="en" lang="en">English — regija</a></li>
 <li><a href="https://www.blokvolt.rs/" hreflang="sr" lang="sr">Srbija — blokvolt.rs</a></li>
 <li><a href="/hr/" hreflang="hr-HR" lang="hr">Hrvatska</a></li>
 <li><a href="/me/" hreflang="sr-ME" lang="sr-Latn-ME">Crna Gora</a></li>
 <li><a href="/al/" hreflang="sq-AL" lang="sq">Shqipëria</a></li>
 <li><a href="/xk/" hreflang="sq" lang="sq">Kosova</a></li>
 <li><a href="/mk/" hreflang="mk-MK" lang="mk">Северна Македонија</a></li>
+<li><a href="/si/" hreflang="sl-SI" lang="sl">Slovenija</a></li>
 <li><a href="mailto:hello@blokvolt.com?subject=Ispravka%20%28blokvolt.com/ba%29">Prijavite grešku</a></li>
 </ul></div>
 </div>
-<div class="ft-legal"><span>© 2026 BlokVolt · podaci provjereni 27.10.2026.</span><span>Mapa: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a></span></div>
-</div></footer><script src="/assets/bv.js?v=405823f96c" defer></script>
-<script src="/assets/bvc.js?v=01e3d0d362" defer></script>
-<script type="module" src="/assets/map.js?v=8211283e3b"></script></body>
+</div>
+<div class="wft-word" aria-hidden="true" translate="no" data-lights="/assets/ft-lights.webp"><span class="wft-w1">blok</span><span class="wft-w2">volt</span></div>
+</div>
+<div class="ft-legal wft-loclegal"><span>© 2026 BlokVolt · podaci provjereni 27.10.2026.</span><span>Mapa: © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>, <a href="https://openchargemap.org" rel="noopener">Open Charge Map</a> · <a href="https://openfreemap.org" rel="noopener">OpenFreeMap</a></span></div>
+</div></footer>
+<script src="/assets/bv.js?v=405823f96c" defer></script>
+<script src="/assets/bvc.js?v=2ab889e505" defer></script>
+<script type="module" src="/assets/map.js?v=d5766dc467"></script></body>
 </html>

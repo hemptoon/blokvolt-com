@@ -8,7 +8,7 @@
   <url><loc>https://blokvolt.com/albania/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://blokvolt.com/kosovo/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://blokvolt.com/serbia/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
-  <url><loc>https://blokvolt.com/</loc><lastmod>2026-10-27</lastmod><priority>1.0</priority></url>
+  <url><loc>https://blokvolt.com/western-balkans/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
   <url><loc>https://blokvolt.com/partners/</loc><lastmod>2026-10-27</lastmod><priority>0.3</priority></url>
   <url><loc>https://blokvolt.com/hr/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
   <url><loc>https://blokvolt.com/hr/karta/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
@@ -69,6 +69,15 @@
   <url><loc>https://blokvolt.com/mk/zgradi/</loc><lastmod>2026-11-10</lastmod><priority>0.7</priority></url>
   <url><loc>https://blokvolt.com/mk/statistika/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/mk/metodologija/</loc><lastmod>2026-10-27</lastmod><priority>0.4</priority></url>
+  <url><loc>https://blokvolt.com/si/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
+  <url><loc>https://blokvolt.com/si/zemljevid/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
+  <url><loc>https://blokvolt.com/si/cene/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://blokvolt.com/si/polnjenje-doma/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://blokvolt.com/si/cena-elektrike/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://blokvolt.com/si/subvencije/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://blokvolt.com/si/potovanje/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://blokvolt.com/si/statistika/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/metodologija/</loc><lastmod>2026-10-27</lastmod><priority>0.4</priority></url>
   <url><loc>https://blokvolt.com/hr/gradovi/zagreb/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/hr/gradovi/osijek/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/hr/gradovi/sibenik/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
@@ -179,7 +188,74 @@
   <url><loc>https://blokvolt.com/mk/gradovi/skopje/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/mk/gradovi/gevgelija/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/mk/gradovi/</loc><lastmod>2026-11-03</lastmod><priority>0.7</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/ljubljana/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/maribor/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/kranj/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/celje/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/koper/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/novo-mesto/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/ptuj/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/trbovlje/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/kamnik/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/jesenice/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/nova-gorica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/domzale/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/skofja-loka/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/murska-sobota/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/postojna/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/logatec/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/vrhnika/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/grosuplje/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/slovenska-bistrica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/slovenj-gradec/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/krsko/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/brezice/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/ajdovscina/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/radovljica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/sezana/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/idrija/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/crnomelj/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/medvode/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/zalec/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/bled/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/slovenske-konjice/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/rogaska-slatina/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/sevnica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/ilirska-bistrica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/cerknica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/sempeter-pri-gorici/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/trebnje/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/tolmin/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/lasko/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/dravograd/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/metlika/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/lenart-v-slovenskih-goricah/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/zrece/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/portoroz/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/lendava/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/gornja-radgona/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/polzela/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/radenci/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/ormoz/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/mozirje/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/bohinjska-bistrica/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/bovec/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/divaca/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/kranjska-gora/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/moravske-toplice/</loc><lastmod>2026-11-03</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/si/kraji/</loc><lastmod>2026-11-03</lastmod><priority>0.7</priority></url>
   <url><loc>https://blokvolt.com/map/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/sr/mapa/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
   <url><loc>https://blokvolt.com/ru/karta/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/de/karte/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/fr/carte/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/nl/kaart/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/es/mapa/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/it/mappa/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/pl/mapa/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/sv/karta/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/nb/kart/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/da/kort/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/fi/kartta/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
+  <url><loc>https://blokvolt.com/pt/mapa/</loc><lastmod>2026-10-27</lastmod><priority>0.6</priority></url>
 </urlset>
